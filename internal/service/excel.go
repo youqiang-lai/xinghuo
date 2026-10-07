@@ -21,7 +21,6 @@ func ReadExcelDir(baseDir string) ([]model.ExcelRow, int, error) {
 	entries, err := os.ReadDir(excelDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// 目录不存在时创建
 			_ = os.MkdirAll(excelDir, 0755)
 			return nil, 0, fmt.Errorf("excel目录不存在，已在exe同级目录创建 excel/ 文件夹，请放入xlsx或xls文件后刷新")
 		}
@@ -67,7 +66,6 @@ func readXlsx(filePath string) ([]model.ExcelRow, error) {
 	}
 	defer f.Close()
 
-	// 获取第一个sheet名
 	sheetName := f.GetSheetName(0)
 	if sheetName == "" {
 		return nil, fmt.Errorf("未找到有效的sheet")
@@ -85,8 +83,6 @@ func readXlsx(filePath string) ([]model.ExcelRow, error) {
 func readXls(filePath string) ([]model.ExcelRow, error) {
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
-		// excelize 对 .xls 兼容性有限，尝试重命名为xlsx读取
-		// 如果仍然失败，返回错误
 		return nil, fmt.Errorf("xls文件请转换为xlsx格式后读取: %w", err)
 	}
 	defer f.Close()
@@ -113,9 +109,11 @@ type colMap struct {
 	visitIdx          int // 是否上门
 	signIdx           int // 是否签单
 	amountIdx         int // 金额
+	followUpIdx       int // 校区跟进结果
 }
 
-// fieldKeywords 每个字段对应的表头匹配关键词（包含任一关键词即匹配）
+// fieldKeywords 每个字段对应的表头匹配关键词
+// campus、followUp 使用全字匹配（h == kw），其余使用包含匹配（Contains）
 var fieldKeywords = map[string][]string{
 	"campus":         {"校区"},
 	"month":          {"月份", "日期", "时间"},
@@ -124,6 +122,18 @@ var fieldKeywords = map[string][]string{
 	"visit":          {"上门"},
 	"sign":           {"签单"},
 	"amount":         {"金额", "收入"},
+	"followUp":       {"校区跟进结果"},
+}
+
+// matchField 判断表头单元格 h 是否匹配字段 field
+func matchField(field string, h string, kw string) bool {
+	switch field {
+	case "campus", "followUp":
+		// 全字匹配：避免"校区跟进结果"误匹配到"校区"
+		return h == kw
+	default:
+		return strings.Contains(h, kw)
+	}
 }
 
 // buildColMap 根据表头行构建列索引映射
@@ -136,6 +146,7 @@ func buildColMap(header []string) colMap {
 		visitIdx:          -1,
 		signIdx:           -1,
 		amountIdx:         -1,
+		followUpIdx:       -1,
 	}
 	for i, h := range header {
 		h = strings.TrimSpace(h)
@@ -144,12 +155,10 @@ func buildColMap(header []string) colMap {
 		}
 		for field, keywords := range fieldKeywords {
 			for _, kw := range keywords {
-				if strings.Contains(h, kw) {
+				if matchField(field, h, kw) {
 					switch field {
 					case "campus":
-						// 校区：如果已匹配到更精准的（仅"校区"不含"学校"歧义），不覆盖；
-						// 但如果标题本身包含"学校"也行，优先取包含"校区"的
-						if cm.campusIdx == -1 || strings.Contains(h, "校区") {
+						if cm.campusIdx == -1 {
 							cm.campusIdx = i
 						}
 					case "month":
@@ -169,17 +178,19 @@ func buildColMap(header []string) colMap {
 							cm.visitIdx = i
 						}
 					case "sign":
-						// 签单：避免把"是否上门"列也匹配为签单（前序逻辑上门先匹配），
-						// 但如果表头包含"签单"更精准，优先使用包含"签单"的列
-						if cm.signIdx == -1 || strings.Contains(h, "签单") {
+						if cm.signIdx == -1 {
 							cm.signIdx = i
 						}
 					case "amount":
 						if cm.amountIdx == -1 {
 							cm.amountIdx = i
 						}
+					case "followUp":
+						if cm.followUpIdx == -1 {
+							cm.followUpIdx = i
+						}
 					}
-					break // 该字段匹配到了就跳出 keywords 循环
+					break
 				}
 			}
 		}
@@ -201,7 +212,6 @@ func parseRows(rows [][]string) []model.ExcelRow {
 		return nil
 	}
 
-	// 第一行是表头
 	cm := buildColMap(rows[0])
 
 	var result []model.ExcelRow
@@ -215,15 +225,14 @@ func parseRows(rows [][]string) []model.ExcelRow {
 			Consultation99: getStr(row, cm.consultation99Idx),
 			VisitStatus:    getStr(row, cm.visitIdx),
 			SignStatus:     getStr(row, cm.signIdx),
+			FollowUp:       getStr(row, cm.followUpIdx),
 		}
 
-		// 金额
 		if cm.amountIdx >= 0 && cm.amountIdx < len(row) {
 			amount, _ := strconv.ParseFloat(strings.TrimSpace(strings.ReplaceAll(row[cm.amountIdx], ",", "")), 64)
 			excelRow.Amount = amount
 		}
 
-		// 跳过完全空行
 		if excelRow.Campus == "" && excelRow.Month == "" && excelRow.Grade == "" {
 			continue
 		}
@@ -248,19 +257,16 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 	for _, row := range rows {
 		totalRecords++
 
-		// 判断是否上门
 		isVisit := isYes(row.VisitStatus)
 		if isVisit {
 			totalVisit++
 		}
-		// 判断是否签单
 		isSign := isYes(row.SignStatus)
 		if isSign {
 			totalSign++
 		}
 		totalAmount += row.Amount
 
-		// 校区维度
 		if row.Campus != "" {
 			if _, ok := campusMap[row.Campus]; !ok {
 				campusMap[row.Campus] = &model.CampusStat{Campus: row.Campus}
@@ -275,7 +281,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			}
 		}
 
-		// 月份维度
 		if row.Month != "" {
 			if _, ok := monthMap[row.Month]; !ok {
 				monthMap[row.Month] = &model.MonthStat{Month: row.Month}
@@ -290,7 +295,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			}
 		}
 
-		// 年级维度
 		if row.Grade != "" {
 			if _, ok := gradeMap[row.Grade]; !ok {
 				gradeMap[row.Grade] = &model.GradeStat{Grade: row.Grade}
@@ -306,7 +310,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 		}
 	}
 
-	// 计算比率
 	var campusStats []model.CampusStat
 	for _, v := range campusMap {
 		if v.TotalCount > 0 {
@@ -349,7 +352,7 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			TotalAmount:      totalAmount,
 			OverallVisitRate: overallVisitRate,
 			OverallSignRate:  overallSignRate,
-			FileCount:        0, // 由调用者设置
+			FileCount:        0,
 		},
 		CampusStats: campusStats,
 		MonthStats:  monthStats,
@@ -358,7 +361,7 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 	}
 }
 
-// isYes 判断字符串是否为"是"或"✓"等确认标记
+// isYes 判断字符串是否为"是"
 func isYes(s string) bool {
 	s = strings.TrimSpace(strings.ToLower(s))
 	return s == "是" || s == "yes" || s == "y" || s == "1" || s == "✓" || s == "true"
@@ -388,7 +391,8 @@ func FilterRows(rows []model.ExcelRow, campus, month, grade, keyword string) []m
 		if kw != "" {
 			if !strings.Contains(strings.ToLower(row.Campus), kw) &&
 				!strings.Contains(strings.ToLower(row.Month), kw) &&
-				!strings.Contains(strings.ToLower(row.Grade), kw) {
+				!strings.Contains(strings.ToLower(row.Grade), kw) &&
+				!strings.Contains(strings.ToLower(row.FollowUp), kw) {
 				continue
 			}
 		}

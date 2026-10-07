@@ -621,11 +621,12 @@
                         <th>99元咨询课</th>
                         <th>是否上门</th>
                         <th>是否签单</th>
+                        <th>校区跟进结果</th>
                         <th style="text-align:right;">金额 (元)</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div></td></tr>
+                    <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div></td></tr>
                 </tbody>
             </table>
         </div>
@@ -753,6 +754,7 @@ function renderTable(rows) {
             <td>${renderBadge(r.consultation_99)}</td>
             <td>${renderBadge(r.visit_status)}</td>
             <td>${renderBadge(r.sign_status)}</td>
+            <td>${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
             <td style="text-align:right;"><span class="amount">¥ ${(r.amount || 0).toFixed(2)}</span></td>
         </tr>`;
     }).join('');

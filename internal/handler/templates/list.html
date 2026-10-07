@@ -523,11 +523,12 @@
                         <th>99元咨询课</th>
                         <th>是否上门</th>
                         <th>是否签单</th>
+                        <th>校区跟进结果</th>
                         <th>金额(元)</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr class="empty-row"><td colspan="8">加载中...</td></tr>
+                    <tr class="empty-row"><td colspan="9">加载中...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -706,12 +707,12 @@ function loadData() {
                 renderPagination();
             } else {
                 document.getElementById('tableBody').innerHTML =
-                    '<tr class="empty-row"><td colspan="8">数据加载失败：' + (res.message || '未知错误') + '</td></tr>';
+                    '<tr class="empty-row"><td colspan="9">数据加载失败：' + (res.message || '未知错误') + '</td></tr>';
             }
         })
         .catch(e => {
             document.getElementById('tableBody').innerHTML =
-                '<tr class="empty-row"><td colspan="8">网络请求失败: ' + e.message + '</td></tr>';
+                '<tr class="empty-row"><td colspan="9">网络请求失败: ' + e.message + '</td></tr>';
         })
         .finally(() => showLoading(false));
 }
@@ -728,7 +729,7 @@ function renderSummary(s) {
 function renderTable(rows) {
     const tbody = document.getElementById('tableBody');
     if (!rows || rows.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><div style="font-size:48px;margin-bottom:12px;">📭</div>暂无数据，请在 excel 目录下放入数据文件后刷新</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9"><div style="font-size:48px;margin-bottom:12px;">📭</div>暂无数据，请在 excel 目录下放入数据文件后刷新</td></tr>';
         return;
     }
     const startIdx = (state.page - 1) * state.pageSize;
@@ -742,6 +743,7 @@ function renderTable(rows) {
             <td>${renderYesNo(r.consultation_99)}</td>
             <td>${renderYesNo(r.visit_status)}</td>
             <td>${renderYesNo(r.sign_status)}</td>
+            <td>${esc(r.follow_up) || '<span style="color:rgba(184,197,214,0.4);">--</span>'}</td>
             <td class="amount-cell">¥ ${(r.amount || 0).toFixed(2)}</td>
         </tr>`;
     }).join('');
