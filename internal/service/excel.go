@@ -116,11 +116,11 @@ type colMap struct {
 // campus、followUp 使用全字匹配（h == kw），其余使用包含匹配（Contains）
 var fieldKeywords = map[string][]string{
 	"campus":         {"校区"},
-	"month":          {"月份", "日期", "时间"},
+	"month":          {"月份"},
 	"grade":          {"年级"},
 	"consultation99": {"99", "咨询课"},
-	"visit":          {"上门"},
-	"sign":           {"签单"},
+	"visit":          {"是否已上门"},
+	"sign":           {"是否签单"},
 	"amount":         {"金额", "收入"},
 	"followUp":       {"校区跟进结果"},
 }

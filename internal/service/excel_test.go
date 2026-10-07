@@ -6,9 +6,8 @@ import (
 )
 
 func TestParseRows(t *testing.T) {
-	// 模拟Excel数据
 	rows := [][]string{
-		{"序号", "校区", "月份", "年级", "99元咨询课", "是否上门", "是否签单", "金额"},
+		{"序号", "校区", "月份", "年级", "99元咨询课", "是否已上门", "是否签单", "金额"},
 		{"1", "北京校区", "2024-01", "一年级", "是", "是", "是", "10000"},
 		{"2", "北京校区", "2024-01", "二年级", "是", "否", "否", "5000"},
 		{"3", "上海校区", "2024-01", "一年级", "是", "是", "是", "15000"},
@@ -19,32 +18,40 @@ func TestParseRows(t *testing.T) {
 
 	result := CalculateStats(parseRows(rows))
 
-	fmt.Printf("Summary: TotalRecords=%d, TotalVisit=%d, TotalSign=%d, TotalAmount=%.2f\n",
-		result.Summary.TotalRecords, result.Summary.TotalVisit, result.Summary.TotalSign, result.Summary.TotalAmount)
-	fmt.Printf("VisitRate=%.1f%%, SignRate=%.1f%%\n",
+	fmt.Printf("Summary: Records=%d Visit=%d VisitAmount=%d AmountCount=%d Sign=%d TotalAmount=%.0f\n",
+		result.Summary.TotalRecords, result.Summary.TotalVisit, 0, 0,
+		result.Summary.TotalSign, result.Summary.TotalAmount)
+	fmt.Printf("VisitRate(已上门且金额>0/已上门)=%.1f%% SignRate(金额>0/总数)=%.1f%%\n",
 		result.Summary.OverallVisitRate, result.Summary.OverallSignRate)
 
 	for _, cs := range result.CampusStats {
-		fmt.Printf("Campus: %s, Count=%d, Visit=%d, Sign=%d, Amount=%.2f, VisitRate=%.1f%%, SignRate=%.1f%%\n",
-			cs.Campus, cs.TotalCount, cs.VisitCount, cs.SignCount, cs.TotalAmount, cs.VisitRate, cs.SignRate)
+		fmt.Printf("Campus:%s total=%d visit=%d visitAmt=%d amtCnt=%d sign=%d amt=%.0f vr=%.1f%% sr=%.1f%%\n",
+			cs.Campus, cs.TotalCount, cs.VisitCount, cs.VisitAmountCount, cs.AmountCount,
+			cs.SignCount, cs.TotalAmount, cs.VisitRate, cs.SignRate)
 	}
 
-	// 验证
 	if result.Summary.TotalRecords != 6 {
-		t.Errorf("Expected 6 records, got %d", result.Summary.TotalRecords)
+		t.Errorf("TotalRecords: want 6, got %d", result.Summary.TotalRecords)
 	}
 	if result.Summary.TotalVisit != 4 {
-		t.Errorf("Expected 4 visits, got %d", result.Summary.TotalVisit)
+		t.Errorf("TotalVisit: want 4, got %d", result.Summary.TotalVisit)
+	}
+	// 4条已上门且全部金额>0 → VisitRate=100%
+	if result.Summary.OverallVisitRate != 100.0 {
+		t.Errorf("OverallVisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
+	}
+	// 6条全部金额>0 → SignRate=100%
+	if result.Summary.OverallSignRate != 100.0 {
+		t.Errorf("OverallSignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
 	}
 	if result.Summary.TotalSign != 3 {
-		t.Errorf("Expected 3 signs, got %d", result.Summary.TotalSign)
+		t.Errorf("TotalSign: want 3, got %d", result.Summary.TotalSign)
 	}
 }
 
 func TestParseRowsColumnOrder(t *testing.T) {
-	// 模拟打乱列顺序+额外无关列的Excel数据，验证按表头匹配
 	rows := [][]string{
-		{"备注", "是否签单", "金额", "序号", "是否上门", "月份", "99元咨询课", "校区", "年级"},
+		{"备注", "是否签单", "金额", "序号", "是否已上门", "月份", "99元咨询课", "校区", "年级"},
 		{"", "是", "10000", "1", "是", "2024-01", "是", "北京校区", "一年级"},
 		{"", "否", "5000", "2", "否", "2024-01", "是", "北京校区", "二年级"},
 		{"", "是", "15000", "3", "是", "2024-01", "是", "上海校区", "一年级"},
@@ -53,19 +60,25 @@ func TestParseRowsColumnOrder(t *testing.T) {
 
 	result := CalculateStats(parseRows(rows))
 
-	fmt.Printf("ColumnOrder Test - TotalRecords=%d, TotalVisit=%d, TotalSign=%d, TotalAmount=%.2f\n",
-		result.Summary.TotalRecords, result.Summary.TotalVisit, result.Summary.TotalSign, result.Summary.TotalAmount)
+	fmt.Printf("ColOrder: Records=%d Visit=%d Sign=%d Amount=%.0f VisitRate=%.1f%% SignRate=%.1f%%\n",
+		result.Summary.TotalRecords, result.Summary.TotalVisit, result.Summary.TotalSign,
+		result.Summary.TotalAmount, result.Summary.OverallVisitRate, result.Summary.OverallSignRate)
 
 	if result.Summary.TotalRecords != 4 {
-		t.Errorf("Expected 4 records, got %d", result.Summary.TotalRecords)
+		t.Errorf("TotalRecords: want 4, got %d", result.Summary.TotalRecords)
 	}
 	if result.Summary.TotalVisit != 3 {
-		t.Errorf("Expected 3 visits, got %d", result.Summary.TotalVisit)
+		t.Errorf("TotalVisit: want 3, got %d", result.Summary.TotalVisit)
 	}
-	if result.Summary.TotalSign != 3 {
-		t.Errorf("Expected 3 signs, got %d", result.Summary.TotalSign)
+	// 3条已上门且全部金额>0 → 100%
+	if result.Summary.OverallVisitRate != 100.0 {
+		t.Errorf("OverallVisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
+	}
+	// 4条全部金额>0 → 100%
+	if result.Summary.OverallSignRate != 100.0 {
+		t.Errorf("OverallSignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
 	}
 	if result.Summary.TotalAmount != 50000.0 {
-		t.Errorf("Expected 50000 total amount, got %.2f", result.Summary.TotalAmount)
+		t.Errorf("TotalAmount: want 50000, got %.2f", result.Summary.TotalAmount)
 	}
 }

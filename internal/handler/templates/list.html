@@ -743,7 +743,7 @@ function renderTable(rows) {
             <td>${renderYesNo(r.consultation_99)}</td>
             <td>${renderYesNo(r.visit_status)}</td>
             <td>${renderYesNo(r.sign_status)}</td>
-            <td>${esc(r.follow_up) || '<span style="color:rgba(184,197,214,0.4);">--</span>'}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up) || ''}">${esc(r.follow_up) || '<span style="color:rgba(184,197,214,0.4);">--</span>'}</td>
             <td class="amount-cell">¥ ${(r.amount || 0).toFixed(2)}</td>
         </tr>`;
     }).join('');

@@ -754,7 +754,7 @@ function renderTable(rows) {
             <td>${renderBadge(r.consultation_99)}</td>
             <td>${renderBadge(r.visit_status)}</td>
             <td>${renderBadge(r.sign_status)}</td>
-            <td>${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up) || ''}">${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
             <td style="text-align:right;"><span class="amount">¥ ${(r.amount || 0).toFixed(2)}</span></td>
         </tr>`;
     }).join('');
