@@ -158,6 +158,17 @@
             display: flex; align-items: center; gap: 8px;
         }
         .campus-card-header .campus-name svg { width: 18px; height: 18px; color: var(--primary); flex-shrink: 0; }
+        .campus-card-header .campus-name .campus-tag {
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #7c5cfc);
+            color: #fff;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(79,110,247,0.25);
+        }
 
         .campus-stats { display: flex; gap: 24px; flex: 1; justify-content: flex-end; align-items: center; }
         .campus-stat-item { text-align: center; }
@@ -203,6 +214,42 @@
             font-size: 13px; color: var(--text-secondary); background: var(--card-bg);
             padding: 4px 14px; border-radius: 20px; font-weight: 500;
             box-shadow: var(--shadow);
+        }
+
+        /* ========== 列展示设置按钮 ========== */
+        .col-toggle-btn {
+            position: relative;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #fff; border: 1px solid var(--border);
+            color: var(--text-secondary); cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .col-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .col-toggle-btn svg { width: 16px; height: 16px; }
+        .col-toggle-panel {
+            position: absolute; top: 100%; right: 0; z-index: 50;
+            display: none; margin-top: 6px;
+            background: #fff; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 14px;
+            min-width: 180px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .col-toggle-panel.show { display: block; }
+        .col-toggle-panel .panel-title {
+            font-size: 12px; color: var(--text-secondary); font-weight: 600;
+            letter-spacing: 0.5px; margin-bottom: 10px;
+            padding-bottom: 6px; border-bottom: 1px solid var(--border-light);
+        }
+        .col-toggle-panel label {
+            display: flex; align-items: center; gap: 8px;
+            padding: 5px 0; cursor: pointer; font-size: 12px;
+            color: var(--text); transition: color 0.2s;
+        }
+        .col-toggle-panel label:hover { color: var(--primary); }
+        .col-toggle-panel label input[type=checkbox] {
+            accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer;
         }
 
         @media (max-width: 800px) {
@@ -306,17 +353,10 @@
             </svg>
             筛选
         </div>
-        <select id="filterCampus"><option value="">全部校区</option></select>
-        <select id="filterMonth"><option value="">全部月份</option></select>
-        <select id="filterGrade"><option value="">全部年级</option></select>
-        <input type="text" id="filterKeyword" placeholder="关键词搜索..." />
-        <button class="btn btn-primary" onclick="doSearch()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            查询
-        </button>
+        <select id="filterCampus" onchange="doSearch()"><option value="">全部校区</option></select>
+        <select id="filterMonth" onchange="doSearch()"><option value="">全部月份</option></select>
+        <select id="filterGrade" onchange="doSearch()"><option value="">全部年级</option></select>
+        <input type="text" id="filterKeyword" placeholder="输入关键词自动筛选..." oninput="debouncedSearch()" />
         <button class="btn btn-outline" onclick="doReset()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="1 4 1 10 7 10"/>
@@ -336,6 +376,15 @@
             <span id="expandAllText">全部展开</span>
         </button>
         <span class="result-tag" id="resultSummary">共 0 个校区</span>
+        <div style="position:relative;margin-left:auto;">
+            <button class="col-toggle-btn" onclick="event.stopPropagation(); toggleColPanel()" title="列展示设置">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            </button>
+            <div class="col-toggle-panel" id="list2ColPanel">
+                <div class="panel-title">📋 明细列展示设置</div>
+                <div id="list2ColCheckboxes"></div>
+            </div>
+        </div>
     </div>
 
     <!-- 校区卡片列表 -->
@@ -347,6 +396,7 @@ let allData = { campuses: [], summary: {} };
 let allExpanded = false;
 
 function init() {
+    initList2ColToggle();
     loadFilters();
     loadData();
 }
@@ -395,6 +445,7 @@ function loadData() {
                 allData = { campuses: res.data.campuses || [], summary: res.data.summary || {} };
                 renderSummary(allData.summary);
                 renderCampusCards(allData.campuses);
+                applyList2ColVisible();
                 runAnimations();
             }
         })
@@ -493,7 +544,7 @@ function renderCampusCards(campuses) {
                         <path d="M12 14v3"/>
                         <path d="M16 14v3"/>
                     </svg>
-                    ${esc(cs.campus)}
+                    <span class="campus-tag">${esc(cs.campus)}</span>
                 </div>
                 <div class="campus-stats">
                     <div class="campus-stat-item">
@@ -523,27 +574,27 @@ function renderCampusCards(campuses) {
                 <table class="detail-table">
                     <thead>
                         <tr>
-                            <th style="width:50px;">#</th>
-                            <th>月份</th>
-                            <th>年级</th>
-                            <th>99元咨询课</th>
-                            <th>是否已上门</th>
-                            <th>是否签单</th>
-                            <th>校区跟进结果</th>
-                            <th style="text-align:right;">金额(元)</th>
+                            <th data-col="index" style="width:50px;">#</th>
+                            <th data-col="month">月份</th>
+                            <th data-col="grade">年级</th>
+                            <th data-col="consultation99">99元咨询课</th>
+                            <th data-col="visit">是否已上门</th>
+                            <th data-col="sign">是否签单</th>
+                            <th data-col="followUp">校区跟进结果</th>
+                            <th data-col="amount" style="text-align:right;">金额(元)</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${cs.rows.map((r, i) => `
                             <tr>
-                                <td class="row-num">${i + 1}</td>
-                                <td>${esc(r.month)}</td>
-                                <td>${esc(r.grade)}</td>
-                                <td>${renderBadge(r.consultation_99)}</td>
-                                <td>${renderBadge(r.visit_status)}</td>
-                                <td>${renderBadge(r.sign_status)}</td>
-                                <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up)||''}">${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
-                                <td style="text-align:right;"><span class="amount">¥ ${(r.amount||0).toFixed(2)}</span></td>
+                                <td data-col="index" class="row-num">${i + 1}</td>
+                                <td data-col="month">${esc(r.month)}</td>
+                                <td data-col="grade">${esc(r.grade)}</td>
+                                <td data-col="consultation99">${renderBadge(r.consultation_99)}</td>
+                                <td data-col="visit">${renderBadge(r.visit_status)}</td>
+                                <td data-col="sign">${renderBadge(r.sign_status)}</td>
+                                <td data-col="followUp" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up)||''}">${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
+                                <td data-col="amount" style="text-align:right;"><span class="amount">¥ ${(r.amount||0).toFixed(2)}</span></td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -591,7 +642,51 @@ function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ========== 明细列展示控制 ==========
+(function() {
+    const KEY = 'list2_detail_col_visible';
+    const DEFS = [
+        { key: 'index', label: '序号' },
+        { key: 'month', label: '月份' },
+        { key: 'grade', label: '年级' },
+        { key: 'consultation99', label: '99元咨询课' },
+        { key: 'visit', label: '是否已上门' },
+        { key: 'sign', label: '是否签单' },
+        { key: 'followUp', label: '校区跟进结果' },
+        { key: 'amount', label: '金额(元)' }
+    ];
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch(e) {} return null; }
+    function save(map) { localStorage.setItem(KEY, JSON.stringify(map)); }
+    function defaults() { const m = {}; DEFS.forEach(c => m[c.key] = true); return m; }
+
+    window.initList2ColToggle = function() {
+        const visible = load() || defaults();
+        document.getElementById('list2ColCheckboxes').innerHTML = DEFS.map(c =>
+            '<label><input type="checkbox" data-col="' + c.key + '" ' + (visible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
+        ).join('');
+        applyList2ColVisible();
+    };
+
+    window.applyList2ColVisible = function() {
+        const map = {};
+        document.querySelectorAll('#list2ColCheckboxes input[type=checkbox]').forEach(cb => { map[cb.dataset.col] = cb.checked; });
+        save(map);
+        document.querySelectorAll('.detail-table thead th[data-col]').forEach(th => { th.style.display = map[th.dataset.col] ? '' : 'none'; });
+        document.querySelectorAll('.detail-table tbody td[data-col]').forEach(td => { td.style.display = map[td.dataset.col] ? '' : 'none'; });
+    };
+
+    window.toggleColPanel = function() {
+        document.getElementById('list2ColPanel').classList.toggle('show');
+    };
+})();
+
 function doSearch() { loadData(); }
+let searchTimer = null;
+function debouncedSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadData, 300);
+}
 function doReset() {
     document.getElementById('filterCampus').value = '';
     document.getElementById('filterMonth').value = '';

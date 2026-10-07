@@ -28,413 +28,207 @@
             overflow-x: hidden;
         }
 
-        /* 星空背景 */
-        #starCanvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
-        }
-
-        /* 网格线 */
+        #starCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         body::before {
             content: '';
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                linear-gradient(rgba(0, 200, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0; pointer-events: none;
+            background: linear-gradient(rgba(0, 200, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: 0; pointer-events: none;
         }
+        .container { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 20px; }
 
-        .container {
-            position: relative; z-index: 1;
-            max-width: 1600px; margin: 0 auto; padding: 20px;
-        }
-
-        /* ========== 导航标签 ========== */
-        .nav-tabs {
-            display: flex; gap: 0; margin-bottom: 0;
-            position: relative;
-        }
+        .nav-tabs { display: flex; gap: 0; margin-bottom: 0; position: relative; }
         .nav-tab {
-            padding: 12px 28px;
-            font-size: 15px; letter-spacing: 2px;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            border-bottom: none;
-            background: rgba(6, 14, 54, 0.5);
-            color: var(--text);
-            transition: all 0.3s;
-            border-radius: 8px 8px 0 0;
-            position: relative;
-            text-decoration: none;
+            padding: 12px 28px; font-size: 15px; letter-spacing: 2px; cursor: pointer;
+            border: 1px solid var(--border-color); border-bottom: none;
+            background: rgba(6, 14, 54, 0.5); color: var(--text);
+            transition: all 0.3s; border-radius: 8px 8px 0 0;
+            position: relative; text-decoration: none;
         }
-        .nav-tab:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
+        .nav-tab:hover { color: var(--accent); border-color: var(--accent); }
         .nav-tab.active {
-            background: var(--bg-panel);
-            color: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 -4px 15px rgba(0, 200, 255, 0.1);
+            background: var(--bg-panel); color: var(--accent);
+            border-color: var(--accent); box-shadow: 0 -4px 15px rgba(0, 200, 255, 0.1);
         }
-        .nav-tab.active::after {
-            content: '';
-            position: absolute; bottom: -1px; left: 0; right: 0;
-            height: 2px;
-            background: var(--bg-panel);
-        }
+        .nav-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--bg-panel); }
 
-        /* ========== 顶部标题栏 ========== */
         .header {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-top: none;
-            border-radius: 0 8px 8px 8px;
-            padding: 24px 30px 18px;
-            position: relative;
-            margin-bottom: 20px;
-            box-shadow: var(--glow);
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-top: none; border-radius: 0 8px 8px 8px;
+            padding: 24px 30px 18px; position: relative; margin-bottom: 20px; box-shadow: var(--glow);
         }
         .header::before {
-            content: '';
-            position: absolute; top: 0; left: 20%; right: 20%;
-            height: 1px;
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
         .header h1 {
             font-size: 28px; font-weight: 700;
             background: linear-gradient(180deg, #e0f0ff 0%, #00c8ff 50%, #0068a0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
             letter-spacing: 6px;
         }
-        .header .subtitle {
-            font-size: 13px; color: rgba(0, 200, 255, 0.5);
-            letter-spacing: 3px; margin-top: 4px;
-        }
+        .header .subtitle { font-size: 13px; color: rgba(0, 200, 255, 0.5); letter-spacing: 3px; margin-top: 4px; }
 
-        /* ========== 汇总卡片 ========== */
-        .summary-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px; margin-bottom: 20px;
-        }
+        .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
         .stat-card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 18px 20px; text-align: center;
-            position: relative; overflow: hidden;
-            box-shadow: var(--glow);
-            transition: all 0.3s;
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 18px 20px; text-align: center;
+            position: relative; overflow: hidden; box-shadow: var(--glow); transition: all 0.3s;
         }
-        .stat-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.2);
-            transform: translateY(-2px);
-        }
+        .stat-card:hover { border-color: var(--accent); box-shadow: 0 0 25px rgba(0, 200, 255, 0.2); transform: translateY(-2px); }
         .stat-card::before {
-            content: '';
-            position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
-        .stat-card .card-label {
-            font-size: 13px; color: rgba(184, 197, 214, 0.6);
-            margin-bottom: 6px; letter-spacing: 2px;
-        }
+        .stat-card .card-label { font-size: 13px; color: rgba(184, 197, 214, 0.6); margin-bottom: 6px; letter-spacing: 2px; }
         .stat-card .card-value {
-            font-size: 36px; font-weight: 700;
-            font-family: 'DIN', 'Courier New', monospace;
+            font-size: 36px; font-weight: 700; font-family: 'DIN', 'Courier New', monospace;
             background: linear-gradient(180deg, #ffffff, #00c8ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .stat-card.amount .card-value {
-            background: linear-gradient(180deg, #fff, #ffb347);
-            -webkit-background-clip: text; background-clip: text;
-        }
-        .stat-card.rate .card-value {
-            background: linear-gradient(180deg, #fff, #ff6b9d);
-            -webkit-background-clip: text; background-clip: text;
-        }
-        .stat-card .card-sub {
-            font-size: 12px; color: rgba(0, 255, 136, 0.6); margin-top: 3px;
-        }
+        .stat-card.amount .card-value { background: linear-gradient(180deg, #fff, #ffb347); -webkit-background-clip: text; background-clip: text; }
+        .stat-card.rate .card-value { background: linear-gradient(180deg, #fff, #ff6b9d); -webkit-background-clip: text; background-clip: text; }
+        .stat-card .card-sub { font-size: 12px; color: rgba(0, 255, 136, 0.6); margin-top: 3px; }
 
-        /* ========== 筛选区 ========== */
         .filter-bar {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 18px 24px; margin-bottom: 20px;
-            box-shadow: var(--glow);
-            display: flex; align-items: center; gap: 16px;
-            flex-wrap: wrap;
-            position: relative;
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 18px 24px; margin-bottom: 20px;
+            box-shadow: var(--glow); display: flex; align-items: center; gap: 16px;
+            flex-wrap: wrap; position: relative;
         }
         .filter-bar::before {
-            content: '';
-            position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
-        .filter-bar .filter-label {
-            font-size: 14px; color: var(--accent);
-            letter-spacing: 2px; font-weight: 600;
-            display: flex; align-items: center; gap: 6px;
+        .filter-bar .filter-label { font-size: 14px; color: var(--accent); letter-spacing: 2px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .filter-bar select, .filter-bar input {
+            height: 38px; padding: 0 14px; background: rgba(0, 20, 50, 0.8);
+            border: 1px solid var(--border-color); border-radius: 4px;
+            color: var(--text-bright); font-size: 13px; font-family: inherit;
+            min-width: 140px; outline: none; transition: all 0.3s;
         }
-        .filter-bar select,
-        .filter-bar input {
-            height: 38px; padding: 0 14px;
-            background: rgba(0, 20, 50, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: var(--text-bright);
-            font-size: 13px; font-family: inherit;
-            min-width: 140px;
-            outline: none; transition: all 0.3s;
-        }
-        .filter-bar select:hover, .filter-bar input:hover {
-            border-color: rgba(0, 200, 255, 0.6);
-        }
-        .filter-bar select:focus, .filter-bar input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 8px rgba(0, 200, 255, 0.2);
-        }
-        .filter-bar select option {
-            background: #0a1628; color: #e0f0ff;
-        }
+        .filter-bar select:hover, .filter-bar input:hover { border-color: rgba(0, 200, 255, 0.6); }
+        .filter-bar select:focus, .filter-bar input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0, 200, 255, 0.2); }
+        .filter-bar select option { background: #0a1628; color: #e0f0ff; }
         .btn {
-            height: 38px; padding: 0 24px; border-radius: 4px;
-            font-size: 13px; font-family: inherit; letter-spacing: 1px;
-            cursor: pointer; transition: all 0.3s;
+            height: 38px; padding: 0 24px; border-radius: 4px; font-size: 13px;
+            font-family: inherit; letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
             display: inline-flex; align-items: center; gap: 6px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(0, 150, 220, 0.7), rgba(0, 200, 255, 0.5));
-            border: 1px solid rgba(0, 200, 255, 0.5);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(0, 180, 240, 0.9), rgba(0, 220, 255, 0.7));
-            box-shadow: 0 0 15px rgba(0, 200, 255, 0.3);
-        }
-        .btn-reset {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(184, 197, 214, 0.3);
-            color: var(--text);
-        }
-        .btn-reset:hover {
-            border-color: rgba(184, 197, 214, 0.6);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .btn-export {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            color: var(--accent2);
-        }
-        .btn-export:hover {
-            background: rgba(0, 255, 136, 0.2);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-        }
+        .btn-primary { background: linear-gradient(135deg, rgba(0, 150, 220, 0.7), rgba(0, 200, 255, 0.5)); border: 1px solid rgba(0, 200, 255, 0.5); color: #fff; }
+        .btn-primary:hover { background: linear-gradient(135deg, rgba(0, 180, 240, 0.9), rgba(0, 220, 255, 0.7)); box-shadow: 0 0 15px rgba(0, 200, 255, 0.3); }
+        .btn-reset { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(184, 197, 214, 0.3); color: var(--text); }
+        .btn-reset:hover { border-color: rgba(184, 197, 214, 0.6); background: rgba(255, 255, 255, 0.1); }
         .filter-spacer { flex: 1; }
-        .result-count {
-            font-size: 13px; color: rgba(0, 200, 255, 0.7);
-            letter-spacing: 1px;
-        }
+        .result-count { font-size: 13px; color: rgba(0, 200, 255, 0.7); letter-spacing: 1px; }
 
-        /* ========== 数据表格 ========== */
         .table-panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--glow);
-            overflow: hidden;
-            position: relative;
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: var(--glow); overflow: hidden; position: relative;
         }
         .table-panel::before {
-            content: '';
-            position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            z-index: 1;
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent); z-index: 1;
         }
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
+        .table-wrapper { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .data-table thead th {
-            background: rgba(0, 200, 255, 0.08);
-            border-bottom: 2px solid var(--border-color);
-            padding: 14px 14px;
-            text-align: center;
-            color: var(--accent);
-            font-weight: 600;
-            letter-spacing: 1px;
-            white-space: nowrap;
+            background: rgba(0, 200, 255, 0.08); border-bottom: 2px solid var(--border-color);
+            padding: 14px 14px; text-align: center; color: var(--accent);
+            font-weight: 600; letter-spacing: 1px; white-space: nowrap;
             position: sticky; top: 0; z-index: 1;
         }
         .data-table tbody td {
-            padding: 12px 14px;
-            text-align: center;
+            padding: 12px 14px; text-align: center;
             border-bottom: 1px solid rgba(0, 200, 255, 0.06);
-            color: var(--text-bright);
-            white-space: nowrap;
+            color: var(--text-bright); white-space: nowrap;
         }
-        .data-table tbody tr {
-            transition: all 0.25s;
-        }
-        .data-table tbody tr:nth-child(even) {
-            background: rgba(0, 200, 255, 0.02);
-        }
-        .data-table tbody tr:hover {
-            background: rgba(0, 200, 255, 0.08);
-        }
-        .tag-yes {
-            display: inline-block; padding: 3px 12px; border-radius: 3px;
-            font-size: 12px; font-weight: 600;
-            background: rgba(0, 255, 136, 0.12);
-            color: #00ff88; letter-spacing: 1px;
-        }
-        .tag-no {
-            display: inline-block; padding: 3px 12px; border-radius: 3px;
-            font-size: 12px;
-            background: rgba(255, 107, 157, 0.08);
-            color: rgba(255, 107, 157, 0.7);
-        }
-        .amount-cell {
-            font-family: 'DIN', 'Courier New', monospace;
-            color: var(--accent4); font-weight: 600;
-        }
-        .row-index {
-            color: rgba(0, 200, 255, 0.4);
-            font-family: 'DIN', 'Courier New', monospace;
-            font-size: 12px;
-        }
-        .empty-row td {
-            padding: 80px 20px; text-align: center;
-            color: rgba(184, 197, 214, 0.4);
-            font-size: 15px; letter-spacing: 2px;
-        }
+        .data-table tbody tr { transition: all 0.25s; }
+        .data-table tbody tr:nth-child(even) { background: rgba(0, 200, 255, 0.02); }
+        .data-table tbody tr:hover { background: rgba(0, 200, 255, 0.08); }
+        .tag-yes { display: inline-block; padding: 3px 12px; border-radius: 3px; font-size: 12px; font-weight: 600; background: rgba(0, 255, 136, 0.12); color: #00ff88; letter-spacing: 1px; }
+        .tag-no { display: inline-block; padding: 3px 12px; border-radius: 3px; font-size: 12px; background: rgba(255, 107, 157, 0.08); color: rgba(255, 107, 157, 0.7); }
+        .amount-cell { font-family: 'DIN', 'Courier New', monospace; color: var(--accent4); font-weight: 600; }
+        .row-index { color: rgba(0, 200, 255, 0.4); font-family: 'DIN', 'Courier New', monospace; font-size: 12px; }
+        .empty-row td { padding: 80px 20px; text-align: center; color: rgba(184, 197, 214, 0.4); font-size: 15px; letter-spacing: 2px; }
 
-        /* ========== 分页 ========== */
         .pagination-bar {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 24px;
-            border-top: 1px solid rgba(0, 200, 255, 0.1);
+            padding: 16px 24px; border-top: 1px solid rgba(0, 200, 255, 0.1);
             flex-wrap: wrap; gap: 12px;
         }
-        .page-info {
-            font-size: 13px; color: rgba(184, 197, 214, 0.6);
-            letter-spacing: 1px;
-        }
-        .page-info strong {
-            color: var(--accent);
-        }
-        .page-btns {
-            display: flex; gap: 4px;
-        }
+        .page-info { font-size: 13px; color: rgba(184, 197, 214, 0.6); letter-spacing: 1px; }
+        .page-info strong { color: var(--accent); }
+        .page-btns { display: flex; gap: 4px; }
         .page-btn {
-            min-width: 36px; height: 36px;
-            padding: 0 8px;
-            background: rgba(0, 20, 50, 0.6);
-            border: 1px solid rgba(0, 200, 255, 0.2);
-            border-radius: 4px;
-            color: var(--text);
-            font-size: 13px; cursor: pointer;
-            transition: all 0.25s;
-            font-family: 'DIN', 'Courier New', monospace;
+            min-width: 36px; height: 36px; padding: 0 8px;
+            background: rgba(0, 20, 50, 0.6); border: 1px solid rgba(0, 200, 255, 0.2);
+            border-radius: 4px; color: var(--text); font-size: 13px; cursor: pointer;
+            transition: all 0.25s; font-family: 'DIN', 'Courier New', monospace;
         }
-        .page-btn:hover:not(.disabled):not(.active) {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .page-btn.active {
-            background: rgba(0, 200, 255, 0.2);
-            border-color: var(--accent);
-            color: var(--accent);
-            font-weight: 700;
-        }
-        .page-btn.disabled {
-            opacity: 0.3; cursor: not-allowed;
-        }
+        .page-btn:hover:not(.disabled):not(.active) { border-color: var(--accent); color: var(--accent); }
+        .page-btn.active { background: rgba(0, 200, 255, 0.2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+        .page-btn.disabled { opacity: 0.3; cursor: not-allowed; }
         .page-size-select {
-            height: 36px; padding: 0 8px;
-            background: rgba(0, 20, 50, 0.6);
-            border: 1px solid rgba(0, 200, 255, 0.2);
-            border-radius: 4px;
-            color: var(--text-bright);
-            font-size: 13px; font-family: inherit;
+            height: 36px; padding: 0 8px; background: rgba(0, 20, 50, 0.6);
+            border: 1px solid rgba(0, 200, 255, 0.2); border-radius: 4px;
+            color: var(--text-bright); font-size: 13px; font-family: inherit;
             min-width: 70px; outline: none; cursor: pointer;
         }
-        .page-size-select option {
-            background: #0a1628; color: #e0f0ff;
-        }
-        .page-jump {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 13px; color: var(--text);
-        }
+        .page-size-select option { background: #0a1628; color: #e0f0ff; }
+        .page-jump { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); }
         .page-jump input {
             width: 50px; height: 36px; text-align: center;
-            background: rgba(0, 20, 50, 0.6);
-            border: 1px solid rgba(0, 200, 255, 0.2);
-            border-radius: 4px;
-            color: var(--text-bright);
-            font-size: 13px; font-family: 'DIN', 'Courier New', monospace;
-            outline: none;
+            background: rgba(0, 20, 50, 0.6); border: 1px solid rgba(0, 200, 255, 0.2);
+            border-radius: 4px; color: var(--text-bright); font-size: 13px;
+            font-family: 'DIN', 'Courier New', monospace; outline: none;
         }
-        .page-jump input:focus {
-            border-color: var(--accent);
-        }
-        .page-ellipsis {
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(184, 197, 214, 0.4);
-            font-size: 13px;
-        }
+        .page-jump input:focus { border-color: var(--accent); }
+        .page-ellipsis { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: rgba(184, 197, 214, 0.4); font-size: 13px; }
 
-        /* ========== 底部数据动画 ========== */
-        .data-wave {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: 70px; z-index: 0; pointer-events: none; overflow: hidden;
-        }
+        .data-wave { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; z-index: 0; pointer-events: none; overflow: hidden; }
         .data-particle {
-            position: absolute; bottom: 0;
-            font-size: 12px;
+            position: absolute; bottom: 0; font-size: 12px;
             animation: floatUp var(--dur) linear infinite;
-            animation-delay: var(--delay);
-            white-space: nowrap; opacity: 0;
+            animation-delay: var(--delay); white-space: nowrap; opacity: 0;
         }
-        @keyframes floatUp {
-            0%   { transform: translateY(0); opacity: 0; }
-            10%  { opacity: 0.5; }
-            90%  { opacity: 0.5; }
-            100% { transform: translateY(-65px); opacity: 0; }
-        }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-65px); opacity: 0; } }
 
-        /* ========== 加载遮罩 ========== */
-        .loading-overlay {
-            display: none;
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(6, 14, 54, 0.7);
-            z-index: 10;
-            justify-content: center; align-items: center;
-        }
+        .loading-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(6, 14, 54, 0.7); z-index: 10; justify-content: center; align-items: center; }
         .loading-overlay.show { display: flex; }
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 2px solid rgba(0, 200, 255, 0.15);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .loading-spinner { width: 40px; height: 40px; border: 2px solid rgba(0, 200, 255, 0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 列展示设置 */
+        .col-toggle-btn {
+            position: fixed; top: 72px; right: 20px; z-index: 101;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            color: var(--accent); cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .col-toggle-btn:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,200,255,0.2); }
+        .col-toggle-btn svg { width: 20px; height: 20px; }
+        .col-toggle-panel {
+            position: fixed; top: 72px; right: 20px; z-index: 102; display: none;
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 16px; min-width: 180px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 15px rgba(0,200,255,0.1);
+        }
+        .col-toggle-panel.show { display: block; }
+        .col-toggle-panel .panel-title {
+            font-size: 13px; color: var(--accent); font-weight: 600;
+            letter-spacing: 1px; margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 1px solid rgba(0,200,255,0.15);
+        }
+        .col-toggle-panel label {
+            display: flex; align-items: center; gap: 10px;
+            padding: 7px 0; cursor: pointer; font-size: 13px;
+            color: var(--text); transition: color 0.2s;
+        }
+        .col-toggle-panel label:hover { color: var(--text-bright); }
+        .col-toggle-panel label input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .summary-row { grid-template-columns: repeat(2, 1fr); }
@@ -447,84 +241,60 @@
 
 <canvas id="starCanvas"></canvas>
 
+<!-- 列展示设置 -->
+<button class="col-toggle-btn" onclick="toggleColPanel()" title="列展示设置">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+</button>
+<div class="col-toggle-panel" id="colPanel">
+    <div class="panel-title">📋 列展示设置</div>
+    <div id="colCheckboxes"></div>
+</div>
+
 <div class="container" id="app">
-    <!-- 导航标签 -->
     <div class="nav-tabs">
         <a href="/data/index" class="nav-tab">📊 数据大屏</a>
         <span class="nav-tab active">📋 数据明细</span>
+        <a href="/data/list2" class="nav-tab">📋 数据明细2</a>
     </div>
-
-    <!-- 标题栏 -->
     <div class="header">
         <h1>星火 咨询数据明细</h1>
         <div class="subtitle">XINGHUO · DATA DETAIL LIST</div>
     </div>
 
-    <!-- 汇总卡片 -->
     <div class="summary-row">
-        <div class="stat-card">
-            <div class="card-label">总咨询记录</div>
-            <div class="card-value" id="cardTotalRecords">--</div>
-            <div class="card-sub">TOTAL RECORDS</div>
-        </div>
-        <div class="stat-card amount">
-            <div class="card-label">总金额</div>
-            <div class="card-value" id="cardTotalAmount">--</div>
-            <div class="card-sub">TOTAL AMOUNT</div>
-        </div>
-        <div class="stat-card rate">
-            <div class="card-label">上门转化率</div>
-            <div class="card-value" id="cardVisitRate">--<span style="font-size:18px;">%</span></div>
-            <div class="card-sub" id="cardVisitCount"></div>
-        </div>
-        <div class="stat-card rate">
-            <div class="card-label">签单转化率</div>
-            <div class="card-value" id="cardSignRate">--<span style="font-size:18px;">%</span></div>
-            <div class="card-sub" id="cardSignCount"></div>
-        </div>
+        <div class="stat-card"><div class="card-label">总咨询记录</div><div class="card-value" id="cardTotalRecords">--</div><div class="card-sub">TOTAL RECORDS</div></div>
+        <div class="stat-card amount"><div class="card-label">总金额</div><div class="card-value" id="cardTotalAmount">--</div><div class="card-sub">TOTAL AMOUNT</div></div>
+        <div class="stat-card rate"><div class="card-label">上门转化率</div><div class="card-value" id="cardVisitRate">--<span style="font-size:18px;">%</span></div><div class="card-sub" id="cardVisitCount"></div></div>
+        <div class="stat-card rate"><div class="card-label">签单转化率</div><div class="card-value" id="cardSignRate">--<span style="font-size:18px;">%</span></div><div class="card-sub" id="cardSignCount"></div></div>
     </div>
 
-    <!-- 筛选区 -->
     <div class="filter-bar">
         <div class="filter-label">🔍 筛选</div>
-        <select id="filterCampus">
-            <option value="">全部校区</option>
-        </select>
-        <select id="filterMonth">
-            <option value="">全部月份</option>
-        </select>
-        <select id="filterGrade">
-            <option value="">全部年级</option>
-        </select>
+        <select id="filterCampus"><option value="">全部校区</option></select>
+        <select id="filterMonth"><option value="">全部月份</option></select>
+        <select id="filterGrade"><option value="">全部年级</option></select>
         <input type="text" id="filterKeyword" placeholder="🔎 关键词搜索..." />
-        <button class="btn btn-primary" onclick="doSearch()">
-            🔍 查询
-        </button>
-        <button class="btn btn-reset" onclick="doReset()">
-            ↻ 重置
-        </button>
+        <button class="btn btn-primary" onclick="doSearch()">🔍 查询</button>
+        <button class="btn btn-reset" onclick="doReset()">↻ 重置</button>
         <span class="filter-spacer"></span>
         <span class="result-count" id="resultCount">共 0 条记录</span>
     </div>
 
-    <!-- 数据表格 -->
     <div class="table-panel" style="position:relative;">
-        <div class="loading-overlay" id="loadingOverlay">
-            <div class="loading-spinner"></div>
-        </div>
+        <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
         <div class="table-wrapper">
-            <table class="data-table">
+            <table class="data-table" id="detailTable">
                 <thead>
                     <tr>
-                        <th style="width:60px;">序号</th>
-                        <th>校区</th>
-                        <th>月份</th>
-                        <th>年级</th>
-                        <th>99元咨询课</th>
-                        <th>是否上门</th>
-                        <th>是否签单</th>
-                        <th>校区跟进结果</th>
-                        <th>金额(元)</th>
+                        <th data-col="index" style="width:60px;">序号</th>
+                        <th data-col="campus">校区</th>
+                        <th data-col="month">月份</th>
+                        <th data-col="grade">年级</th>
+                        <th data-col="consultation99">99元咨询课</th>
+                        <th data-col="visit">是否上门</th>
+                        <th data-col="sign">是否签单</th>
+                        <th data-col="followUp">校区跟进结果</th>
+                        <th data-col="amount">金额(元)</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -532,191 +302,144 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- 分页 -->
         <div class="pagination-bar">
-            <div class="page-info">
-                共 <strong id="pageTotal">0</strong> 条 &nbsp;|&nbsp;
-                第 <strong id="pageCurrent">1</strong> / <strong id="pageMax">1</strong> 页
-            </div>
+            <div class="page-info">共 <strong id="pageTotal">0</strong> 条 &nbsp;|&nbsp; 第 <strong id="pageCurrent">1</strong> / <strong id="pageMax">1</strong> 页</div>
             <div class="page-btns" id="pageBtns"></div>
             <div style="display:flex;align-items:center;gap:12px;">
                 <span style="font-size:13px;color:rgba(184,197,214,0.6);">每页</span>
                 <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
-                    <option value="10">10</option>
-                    <option value="20" selected>20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+                    <option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option>
                 </select>
                 <span style="font-size:13px;color:rgba(184,197,214,0.6);">条</span>
-                <div class="page-jump">
-                    <span>跳至</span>
-                    <input type="text" id="jumpInput" onkeydown="if(event.key==='Enter')jumpPage()" />
-                    <span>页</span>
-                </div>
+                <div class="page-jump"><span>跳至</span><input type="text" id="jumpInput" onkeydown="if(event.key==='Enter')jumpPage()" /><span>页</span></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 底部数据动画 -->
 <div class="data-wave" id="dataWave"></div>
 
 <script>
-// ========== 星空动画背景 ==========
+// ============ 列展示控制 ============
+const COL_STORAGE_KEY = 'list_detail_col_visible';
+const COL_DEFS = [
+    { key: 'index',       label: '序号' },
+    { key: 'campus',      label: '校区' },
+    { key: 'month',       label: '月份' },
+    { key: 'grade',       label: '年级' },
+    { key: 'consultation99', label: '99元咨询课' },
+    { key: 'visit',       label: '是否上门' },
+    { key: 'sign',        label: '是否签单' },
+    { key: 'followUp',    label: '校区跟进结果' },
+    { key: 'amount',      label: '金额(元)' }
+];
+
+function loadColVisible() { try { return JSON.parse(localStorage.getItem(COL_STORAGE_KEY)); } catch(e) {} return null; }
+function saveColVisible(map) { localStorage.setItem(COL_STORAGE_KEY, JSON.stringify(map)); }
+function getDefaultColVisible() { const map = {}; COL_DEFS.forEach(c => map[c.key] = true); return map; }
+
+function initColToggle() {
+    let visible = loadColVisible() || getDefaultColVisible();
+    document.getElementById('colCheckboxes').innerHTML = COL_DEFS.map(c =>
+        `<label><input type="checkbox" data-col="${c.key}" ${visible[c.key] ? 'checked' : ''} onchange="applyColVisible()">${c.label}</label>`
+    ).join('');
+    applyColVisible();
+}
+
+function applyColVisible() {
+    const map = {};
+    document.querySelectorAll('#colCheckboxes input[type=checkbox]').forEach(cb => { map[cb.dataset.col] = cb.checked; });
+    saveColVisible(map);
+    // 表头和表体
+    document.querySelectorAll('#detailTable thead th[data-col], #detailTable tbody td[data-col]').forEach(el => {
+        el.style.display = map[el.dataset.col] ? '' : 'none';
+    });
+}
+
+function toggleColPanel() {
+    document.getElementById('colPanel').classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+    const panel = document.getElementById('colPanel');
+    const btn = document.querySelector('.col-toggle-btn');
+    if (!panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) { panel.classList.remove('show'); }
+});
+
+// ============ 星空动画背景 ============
 (function() {
-    const canvas = document.getElementById('starCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
     let stars = [], lines = [];
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        initStars();
-    }
-
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initStars(); }
     function initStars() {
-        stars = [];
-        const count = Math.floor((canvas.width * canvas.height) / 4500);
+        stars = []; const count = Math.floor((canvas.width * canvas.height) / 4500);
         for (let i = 0; i < count; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 1.5 + 0.5,
-                alpha: Math.random(),
-                speed: Math.random() * 0.02 + 0.005,
-                maxAlpha: Math.random() * 0.6 + 0.3,
-                phase: Math.random() * Math.PI * 2
-            });
+            stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 1.5 + 0.5, alpha: Math.random(), speed: Math.random() * 0.02 + 0.005, maxAlpha: Math.random() * 0.6 + 0.3, phase: Math.random() * Math.PI * 2 });
         }
-        lines = [];
-        const lineCount = Math.floor(count / 3);
-        for (let i = 0; i < lineCount; i++) {
-            lines.push(stars[Math.floor(Math.random() * stars.length)]);
-        }
+        lines = []; const lineCount = Math.floor(count / 3);
+        for (let i = 0; i < lineCount; i++) lines.push(stars[Math.floor(Math.random() * stars.length)]);
     }
-
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(s => {
-            s.alpha += s.speed;
-            const a = s.maxAlpha * (0.5 + 0.5 * Math.sin(s.alpha + s.phase));
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 200, 255, ${a})`;
-            ctx.fill();
-        });
-        ctx.strokeStyle = 'rgba(0, 200, 255, 0.04)';
-        ctx.lineWidth = 0.5;
+        stars.forEach(s => { s.alpha += s.speed; const a = s.maxAlpha * (0.5 + 0.5 * Math.sin(s.alpha + s.phase)); ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(0, 200, 255, ${a})`; ctx.fill(); });
+        ctx.strokeStyle = 'rgba(0, 200, 255, 0.04)'; ctx.lineWidth = 0.5;
         for (let i = 0; i < lines.length; i++) {
             for (let j = i + 1; j < lines.length; j++) {
-                const a = lines[i], b = lines[j];
-                const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-                if (dist < 150) {
-                    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-                }
+                const a = lines[i], b = lines[j]; const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+                if (dist < 150) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
             }
         }
         requestAnimationFrame(draw);
     }
-    resize(); draw();
-    window.addEventListener('resize', resize);
+    resize(); draw(); window.addEventListener('resize', resize);
 })();
 
-// ========== 底部数据粒子 ==========
 (function() {
     const container = document.getElementById('dataWave');
-    const terms = ['01', '10', 'DATA', 'LIST', '📋', '110101', '001100', '星火', '明细',
-                    '校区', '月份', '99元', '金额', '💰', '0x2F', '1010', 'XINGHUO',
-                    'Visit', 'Sign', 'Grade', '页面', '列表', '010010'];
+    const terms = ['01', '10', 'DATA', 'LIST', '📋', '110101', '001100', '星火', '明细','校区', '月份', '99元', '金额', '💰', '0x2F', '1010', 'XINGHUO','Visit', 'Sign', 'Grade', '页面', '列表', '010010'];
     for (let i = 0; i < 28; i++) {
-        const el = document.createElement('span');
-        el.className = 'data-particle';
+        const el = document.createElement('span'); el.className = 'data-particle';
         el.textContent = terms[Math.floor(Math.random() * terms.length)];
-        el.style.left = Math.random() * 100 + '%';
-        el.style.setProperty('--dur', (Math.random() * 6 + 4) + 's');
-        el.style.setProperty('--delay', (Math.random() * 8) + 's');
-        el.style.fontSize = (Math.random() * 6 + 10) + 'px';
+        el.style.left = Math.random() * 100 + '%'; el.style.setProperty('--dur', (Math.random() * 6 + 4) + 's');
+        el.style.setProperty('--delay', (Math.random() * 8) + 's'); el.style.fontSize = (Math.random() * 6 + 10) + 'px';
         el.style.color = ['rgba(0,200,255,0.4)','rgba(0,255,136,0.35)','rgba(255,179,71,0.35)','rgba(255,107,157,0.3)'][Math.floor(Math.random()*4)];
         container.appendChild(el);
     }
 })();
 
-// ========== 数据状态 ==========
-const state = {
-    campuses: [], months: [], grades: [],
-    total: 0, page: 1, pageSize: 20,
-    filterCampus: '', filterMonth: '', filterGrade: '', filterKeyword: ''
-};
+const state = { campuses: [], months: [], grades: [], total: 0, page: 1, pageSize: 20, filterCampus: '', filterMonth: '', filterGrade: '', filterKeyword: '' };
 
-// ========== 初始化 ==========
-function init() {
-    loadFilters();
-    loadData();
-}
+function init() { loadFilters(); loadData(); }
 init();
 
 function loadFilters() {
     fetch('/data/list/api?page=1&pageSize=1')
-        .then(r => r.json())
-        .then(res => {
+        .then(r => r.json()).then(res => {
             if (res.code === 0 && res.data.filters) {
-                const f = res.data.filters;
-                state.campuses = f.campuses || [];
-                state.months = f.months || [];
-                state.grades = f.grades || [];
-                populateSelect('filterCampus', state.campuses);
-                populateSelect('filterMonth', state.months);
-                populateSelect('filterGrade', state.grades);
+                state.campuses = res.data.filters.campuses || []; state.months = res.data.filters.months || []; state.grades = res.data.filters.grades || [];
+                populateSelect('filterCampus', state.campuses); populateSelect('filterMonth', state.months); populateSelect('filterGrade', state.grades);
             }
         });
 }
-
 function populateSelect(id, items) {
-    const sel = document.getElementById(id);
-    const val = sel.value;
-    sel.innerHTML = '<option value="">' + ({
-        filterCampus: '全部校区', filterMonth: '全部月份', filterGrade: '全部年级'
-    })[id] + '</option>';
-    items.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item; opt.textContent = item;
-        sel.appendChild(opt);
-    });
+    const sel = document.getElementById(id); const val = sel.value;
+    sel.innerHTML = '<option value="">' + ({filterCampus:'全部校区',filterMonth:'全部月份',filterGrade:'全部年级'})[id] + '</option>';
+    items.forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; sel.appendChild(opt); });
     sel.value = val;
 }
-
 function loadData() {
     showLoading(true);
-    const params = new URLSearchParams({
-        page: state.page,
-        pageSize: state.pageSize
-    });
+    const params = new URLSearchParams({ page: state.page, pageSize: state.pageSize });
     if (state.filterCampus) params.set('campus', state.filterCampus);
     if (state.filterMonth) params.set('month', state.filterMonth);
     if (state.filterGrade) params.set('grade', state.filterGrade);
     if (state.filterKeyword) params.set('keyword', state.filterKeyword);
-
     fetch('/data/list/api?' + params.toString())
-        .then(r => r.json())
-        .then(res => {
-            if (res.code === 0) {
-                renderSummary(res.data.summary);
-                renderTable(res.data.rows);
-                state.total = res.data.total || 0;
-                renderPagination();
-            } else {
-                document.getElementById('tableBody').innerHTML =
-                    '<tr class="empty-row"><td colspan="9">数据加载失败：' + (res.message || '未知错误') + '</td></tr>';
-            }
-        })
-        .catch(e => {
-            document.getElementById('tableBody').innerHTML =
-                '<tr class="empty-row"><td colspan="9">网络请求失败: ' + e.message + '</td></tr>';
-        })
+        .then(r => r.json()).then(res => {
+            if (res.code === 0) { renderSummary(res.data.summary); renderTable(res.data.rows); state.total = res.data.total || 0; renderPagination(); }
+            else document.getElementById('tableBody').innerHTML = '<tr class="empty-row"><td colspan="9">数据加载失败：' + (res.message||'未知错误') + '</td></tr>';
+        }).catch(e => document.getElementById('tableBody').innerHTML = '<tr class="empty-row"><td colspan="9">网络请求失败: ' + e.message + '</td></tr>')
         .finally(() => showLoading(false));
 }
-
 function renderSummary(s) {
     document.getElementById('cardTotalRecords').textContent = s.total_records || 0;
     document.getElementById('cardTotalAmount').textContent = (s.total_amount || 0).toFixed(2);
@@ -725,135 +448,57 @@ function renderSummary(s) {
     document.getElementById('cardSignRate').innerHTML = (s.overall_sign_rate || 0).toFixed(1) + '<span style="font-size:18px;">%</span>';
     document.getElementById('cardSignCount').textContent = '签单 ' + (s.total_sign || 0) + ' 人';
 }
-
 function renderTable(rows) {
     const tbody = document.getElementById('tableBody');
-    if (!rows || rows.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="9"><div style="font-size:48px;margin-bottom:12px;">📭</div>暂无数据，请在 excel 目录下放入数据文件后刷新</td></tr>';
-        return;
-    }
+    if (!rows || rows.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9"><div style="font-size:48px;margin-bottom:12px;">📭</div>暂无数据，请在 excel 目录下放入数据文件后刷新</td></tr>'; return; }
     const startIdx = (state.page - 1) * state.pageSize;
     tbody.innerHTML = rows.map((r, i) => {
         const idx = startIdx + i + 1;
         return `<tr>
-            <td class="row-index">${idx}</td>
-            <td>${esc(r.campus)}</td>
-            <td>${esc(r.month)}</td>
-            <td>${esc(r.grade)}</td>
-            <td>${renderYesNo(r.consultation_99)}</td>
-            <td>${renderYesNo(r.visit_status)}</td>
-            <td>${renderYesNo(r.sign_status)}</td>
-            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up) || ''}">${esc(r.follow_up) || '<span style="color:rgba(184,197,214,0.4);">--</span>'}</td>
-            <td class="amount-cell">¥ ${(r.amount || 0).toFixed(2)}</td>
+            <td class="row-index" data-col="index">${idx}</td>
+            <td data-col="campus">${esc(r.campus)}</td>
+            <td data-col="month">${esc(r.month)}</td>
+            <td data-col="grade">${esc(r.grade)}</td>
+            <td data-col="consultation99">${renderYesNo(r.consultation_99)}</td>
+            <td data-col="visit">${renderYesNo(r.visit_status)}</td>
+            <td data-col="sign">${renderYesNo(r.sign_status)}</td>
+            <td data-col="followUp" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up)||''}">${esc(r.follow_up) || '<span style="color:rgba(184,197,214,0.4);">--</span>'}</td>
+            <td class="amount-cell" data-col="amount">¥ ${(r.amount||0).toFixed(2)}</td>
         </tr>`;
     }).join('');
+    // 重新应用列可见性
+    applyColVisible();
 }
-
 function renderYesNo(val) {
     if (!val) return '<span class="tag-no">--</span>';
     const v = val.trim();
-    if (v === '是' || v.toLowerCase() === 'yes' || v === 'y' || v === '1' || v === '✓' || v === 'true') {
-        return '<span class="tag-yes">是</span>';
-    }
-    return '<span class="tag-no">' + esc(v) + '</span>';
+    return (v==='是'||v.toLowerCase()==='yes'||v==='y'||v==='1'||v==='✓'||v==='true') ? '<span class="tag-yes">是</span>' : '<span class="tag-no">'+esc(v)+'</span>';
 }
-
 function esc(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
-
 function renderPagination() {
     const totalPages = Math.ceil(state.total / state.pageSize) || 1;
-    document.getElementById('pageTotal').textContent = state.total;
-    document.getElementById('pageCurrent').textContent = state.page;
-    document.getElementById('pageMax').textContent = totalPages;
+    document.getElementById('pageTotal').textContent = state.total; document.getElementById('pageCurrent').textContent = state.page; document.getElementById('pageMax').textContent = totalPages;
     document.getElementById('resultCount').textContent = '共 ' + state.total + ' 条记录';
-
     const container = document.getElementById('pageBtns');
-    let html = '';
-    // 上一页
-    html += `<button class="page-btn ${state.page <= 1 ? 'disabled' : ''}" onclick="goPage(${state.page - 1})" ${state.page <= 1 ? 'disabled' : ''}>◀</button>`;
-
-    // 页码
-    const pages = [];
-    const show = 7;
-    let start = Math.max(1, state.page - Math.floor(show / 2));
-    let end = Math.min(totalPages, start + show - 1);
-    if (end - start < show - 1) start = Math.max(1, end - show + 1);
-
-    if (start > 1) {
-        pages.push(1);
-        if (start > 2) pages.push('...');
-    }
+    let html = `<button class="page-btn ${state.page<=1?'disabled':''}" onclick="goPage(${state.page-1})" ${state.page<=1?'disabled':''}>◀</button>`;
+    const pages = []; let start = Math.max(1, state.page - 3), end = Math.min(totalPages, start + 6);
+    if (end - start < 6) start = Math.max(1, end - 6);
+    if (start > 1) { pages.push(1); if (start > 2) pages.push('...'); }
     for (let p = start; p <= end; p++) pages.push(p);
-    if (end < totalPages) {
-        if (end < totalPages - 1) pages.push('...');
-        pages.push(totalPages);
-    }
-
-    pages.forEach(p => {
-        if (p === '...') {
-            html += '<span class="page-ellipsis">…</span>';
-        } else {
-            html += `<button class="page-btn ${p === state.page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
-        }
-    });
-
-    // 下一页
-    html += `<button class="page-btn ${state.page >= totalPages ? 'disabled' : ''}" onclick="goPage(${state.page + 1})" ${state.page >= totalPages ? 'disabled' : ''}>▶</button>`;
-    container.innerHTML = html;
-    document.getElementById('jumpInput').value = '';
+    if (end < totalPages) { if (end < totalPages - 1) pages.push('...'); pages.push(totalPages); }
+    pages.forEach(p => { if (p==='...') html += '<span class="page-ellipsis">…</span>'; else html += `<button class="page-btn ${p===state.page?'active':''}" onclick="goPage(${p})">${p}</button>`; });
+    html += `<button class="page-btn ${state.page>=totalPages?'disabled':''}" onclick="goPage(${state.page+1})" ${state.page>=totalPages?'disabled':''}>▶</button>`;
+    container.innerHTML = html; document.getElementById('jumpInput').value = '';
 }
+function goPage(p) { const tp = Math.ceil(state.total/state.pageSize)||1; if(p<1||p>tp)return; state.page=p; loadData(); document.querySelector('.table-wrapper').scrollTop = 0; }
+function jumpPage() { const p = parseInt(document.getElementById('jumpInput').value); if(isNaN(p))return; goPage(p); }
+function changePageSize() { state.pageSize = parseInt(document.getElementById('pageSizeSelect').value); state.page = 1; loadData(); }
+function doSearch() { state.filterCampus = document.getElementById('filterCampus').value; state.filterMonth = document.getElementById('filterMonth').value; state.filterGrade = document.getElementById('filterGrade').value; state.filterKeyword = document.getElementById('filterKeyword').value.trim(); state.page = 1; loadData(); }
+function doReset() { document.getElementById('filterCampus').value=''; document.getElementById('filterMonth').value=''; document.getElementById('filterGrade').value=''; document.getElementById('filterKeyword').value=''; state.filterCampus=''; state.filterMonth=''; state.filterGrade=''; state.filterKeyword=''; state.page=1; loadData(); }
+function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
 
-function goPage(p) {
-    const totalPages = Math.ceil(state.total / state.pageSize) || 1;
-    if (p < 1 || p > totalPages) return;
-    state.page = p;
-    loadData();
-    // 滚回表格顶部
-    document.querySelector('.table-wrapper').scrollTop = 0;
-}
-
-function jumpPage() {
-    const p = parseInt(document.getElementById('jumpInput').value);
-    if (isNaN(p)) return;
-    goPage(p);
-}
-
-function changePageSize() {
-    state.pageSize = parseInt(document.getElementById('pageSizeSelect').value);
-    state.page = 1;
-    loadData();
-}
-
-function doSearch() {
-    state.filterCampus = document.getElementById('filterCampus').value;
-    state.filterMonth = document.getElementById('filterMonth').value;
-    state.filterGrade = document.getElementById('filterGrade').value;
-    state.filterKeyword = document.getElementById('filterKeyword').value.trim();
-    state.page = 1;
-    loadData();
-}
-
-function doReset() {
-    document.getElementById('filterCampus').value = '';
-    document.getElementById('filterMonth').value = '';
-    document.getElementById('filterGrade').value = '';
-    document.getElementById('filterKeyword').value = '';
-    state.filterCampus = '';
-    state.filterMonth = '';
-    state.filterGrade = '';
-    state.filterKeyword = '';
-    state.page = 1;
-    loadData();
-}
-
-function showLoading(show) {
-    document.getElementById('loadingOverlay').classList.toggle('show', show);
-}
-
-// 导出功能
-function exportData() {
-    alert('导出功能：请直接在 excel 目录查看原始文件，或联系管理员配置导出。');
-}
+// 初始化列展示
+initColToggle();
 </script>
 </body>
 </html>
