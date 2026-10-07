@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --primary: #4f6ef7;
+            --primary-light: #eef1fe;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== 顶部导航 ========== */
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .topbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .topbar .logo .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), #7c5cfc);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+        }
+        .topbar .topbar-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar .topbar-links a {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .topbar .topbar-links a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .topbar .topbar-links a.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* ========== 主容器 ========== */
+        .main {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+        }
+
+        /* ========== 页面标题 ========== */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .page-header .breadcrumb {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .page-header .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        /* ========== 统计卡片行 ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border);
+            transform: translateY(-1px);
+        }
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .stat-card .stat-icon.blue   { background: #eef1fe; color: var(--primary); }
+        .stat-card .stat-icon.green  { background: #ecfdf5; color: var(--success); }
+        .stat-card .stat-icon.orange { background: #fff7ed; color: var(--warning); }
+        .stat-card .stat-icon.purple { background: #f5f3ff; color: #7c5cfc; }
+        .stat-card .stat-info { flex: 1; min-width: 0; }
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -1px;
+            font-family: 'Inter', -apple-system, 'DIN', monospace;
+        }
+        .stat-card .stat-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .stat-card .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .stat-card .stat-trend.up   { color: var(--success); }
+        .stat-card .stat-trend.down { color: var(--danger); }
+
+        /* ========== 筛选区卡片 ========== */
+        .filter-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-card .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-right: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-card select,
+        .filter-card input {
+            height: 38px;
+            padding: 0 12px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s;
+            min-width: 130px;
+        }
+        .filter-card select:hover,
+        .filter-card input:hover {
+            border-color: #c4c9d4;
+        }
+        .filter-card select:focus,
+        .filter-card input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
+        }
+        .filter-card select option {
+            color: var(--text);
+        }
+        .btn {
+            height: 38px;
+            padding: 0 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            letter-spacing: 0.2px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #3d5ce5;
+            box-shadow: 0 2px 8px rgba(79,110,247,0.3);
+        }
+        .btn-outline {
+            background: #fff;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover {
+            background: var(--bg);
+            border-color: #c4c9d4;
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #16a34a;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+        }
+        .filter-spacer { flex: 1; }
+        .result-tag {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .result-tag strong {
+            color: var(--primary);
+        }
+
+        /* ========== 表格卡片 ========== */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .table-card-header {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .table-card-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .table-card-header .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fafbfc;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .data-table thead th:first-child { padding-left: 24px; }
+        .data-table thead th:last-child  { padding-right: 24px; }
+        .data-table tbody td {
+            padding: 13px 16px;
+            font-size: 13px;
+            color: var(--text);
+            border-bottom: 1px solid var(--border-light);
+            white-space: nowrap;
+        }
+        .data-table tbody td:first-child { padding-left: 24px; }
+        .data-table tbody td:last-child  { padding-right: 24px; }
+        .data-table tbody tr {
+            transition: background 0.15s;
+        }
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .row-num {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .badge-success {
+            background: #ecfdf5;
+            color: #15803d;
+        }
+        .badge-default {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .amount {
+            font-weight: 700;
+            color: var(--text);
+            font-family: 'Inter', 'DIN', monospace;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .empty-state .empty-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ========== 分页 ========== */
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            border-top: 1px solid var(--border-light);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .page-info strong {
+            color: var(--text);
+        }
+        .page-btns {
+            display: flex;
+            gap: 4px;
+        }
+        .page-btn {
+            min-width: 34px;
+            height: 34px;
+            padding: 0 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .page-btn:hover:not(.disabled):not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .page-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            font-weight: 700;
+        }
+        .page-btn.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .page-ellipsis {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .page-size-select {
+            height: 34px;
+            padding: 0 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            background: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .page-jump input {
+            width: 44px;
+            height: 34px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Inter', 'DIN', monospace;
+            color: var(--text);
+            outline: none;
+        }
+        .page-jump input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
+        }
+
+        /* ========== 加载态 ========== */
+        .loading-shimmer {
+            animation: shimmer 1.5s infinite;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            border-radius: 4px;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .main { padding: 16px; }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card select, .filter-card input { min-width: auto; }
+            .pagination-bar { flex-direction: column; align-items: flex-start; }
+            .topbar { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== 顶部导航 ========== -->
+<nav class="topbar">
+    <div class="logo">
+        <div class="icon">✦</div>
+        星火数据
+    </div>
+    <div class="topbar-links">
+        <a href="/data/index">数据大屏</a>
+        <a href="/data/list">深色明细</a>
+        <a href="/data/list2" class="active">数据明细</a>
+    </div>
+</nav>
+
+<!-- ========== 主体 ========== -->
+<div class="main">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <div>
+            <h1>咨询数据明细</h1>
+            <div class="breadcrumb">首页 / <span>数据明细</span></div>
+        </div>
+        <button class="btn btn-success" onclick="exportData()">
+            📥 导出数据
+        </button>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">📋</div>
+            <div class="stat-info">
+                <div class="stat-label">总咨询记录</div>
+                <div class="stat-value" id="cardTotal">--</div>
+                <div class="stat-sub">全部校区汇总</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">💰</div>
+            <div class="stat-info">
+                <div class="stat-label">总金额</div>
+                <div class="stat-value" id="cardAmount">--</div>
+                <div class="stat-sub">累计签单金额</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">🚪</div>
+            <div class="stat-info">
+                <div class="stat-label">上门转化率</div>
+                <div class="stat-value" id="cardVisit">--</div>
+                <div class="stat-sub" id="cardVisitSub"></div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple">✍️</div>
+            <div class="stat-info">
+                <div class="stat-label">签单转化率</div>
+                <div class="stat-value" id="cardSign">--</div>
+                <div class="stat-sub" id="cardSignSub"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 筛选区 -->
+    <div class="filter-card">
+        <div class="filter-title">🔍 筛选条件</div>
+        <select id="filterCampus">
+            <option value="">全部校区</option>
+        </select>
+        <select id="filterMonth">
+            <option value="">全部月份</option>
+        </select>
+        <select id="filterGrade">
+            <option value="">全部年级</option>
+        </select>
+        <input type="text" id="filterKeyword" placeholder="关键词搜索..." />
+        <button class="btn btn-primary" onclick="doSearch()">
+            🔍 查询
+        </button>
+        <button class="btn btn-outline" onclick="doReset()">
+            ↻ 重置
+        </button>
+        <span class="filter-spacer"></span>
+        <span class="result-tag">
+            共 <strong id="resultCount">0</strong> 条记录
+        </span>
+    </div>
+
+    <!-- 数据表格 -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <h3>📋 数据列表</h3>
+            <div class="table-actions">
+                <button class="btn btn-outline" onclick="doReset()" style="height:32px;padding:0 12px;font-size:12px;">🔄 刷新</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>校区</th>
+                        <th>月份</th>
+                        <th>年级</th>
+                        <th>99元咨询课</th>
+                        <th>是否上门</th>
+                        <th>是否签单</th>
+                        <th style="text-align:right;">金额 (元)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-bar">
+            <div class="page-info">
+                共 <strong id="pageTotal">0</strong> 条 &nbsp;·&nbsp;
+                第 <strong id="pageCurrent">1</strong> / <strong id="pageMax">1</strong> 页
+            </div>
+            <div class="page-btns" id="pageBtns"></div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:13px;color:var(--text-secondary);">每页</span>
+                <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
+                    <option value="10">10 条</option>
+                    <option value="20" selected>20 条</option>
+                    <option value="50">50 条</option>
+                    <option value="100">100 条</option>
+                </select>
+                <div class="page-jump">
+                    跳至
+                    <input type="text" id="jumpInput" onkeydown="if(event.key==='Enter')jumpPage()" />
+                    页
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== 状态 ==========
+const state = {
+    campuses: [], months: [], grades: [],
+    total: 0, page: 1, pageSize: 20,
+    filterCampus: '', filterMonth: '', filterGrade: '', filterKeyword: ''
+};
+
+// ========== 初始化 ==========
+function init() {
+    loadFilters();
+    loadData();
+}
+init();
+
+function loadFilters() {
+    fetch('/data/list2/api?page=1&pageSize=1')
+        .then(r => r.json())
+        .then(res => {
+            if (res.code === 0 && res.data.filters) {
+                const f = res.data.filters;
+                state.campuses = f.campuses || [];
+                state.months = f.months || [];
+                state.grades = f.grades || [];
+                populateSelect('filterCampus', state.campuses, '全部校区');
+                populateSelect('filterMonth', state.months, '全部月份');
+                populateSelect('filterGrade', state.grades, '全部年级');
+            }
+        });
+}
+
+function populateSelect(id, items, defaultLabel) {
+    const sel = document.getElementById(id);
+    const val = sel.value;
+    sel.innerHTML = '<option value="">' + defaultLabel + '</option>';
+    items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        sel.appendChild(opt);
+    });
+    sel.value = val;
+}
+
+function loadData() {
+    const params = new URLSearchParams({
+        page: state.page,
+        pageSize: state.pageSize
+    });
+    if (state.filterCampus) params.set('campus', state.filterCampus);
+    if (state.filterMonth)  params.set('month', state.filterMonth);
+    if (state.filterGrade)  params.set('grade', state.filterGrade);
+    if (state.filterKeyword) params.set('keyword', state.filterKeyword);
+
+    fetch('/data/list2/api?' + params.toString())
+        .then(r => r.json())
+        .then(res => {
+            if (res.code === 0) {
+                renderSummary(res.data.summary);
+                renderTable(res.data.rows);
+                state.total = res.data.total || 0;
+                renderPagination();
+            } else {
+                showTableError(res.message || '加载失败');
+            }
+        })
+        .catch(e => showTableError('网络请求失败: ' + e.message));
+}
+
+function renderSummary(s) {
+    const fmt = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const fmtMoney = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    document.getElementById('cardTotal').textContent = fmt(s.total_records || 0);
+    document.getElementById('cardAmount').textContent = '¥ ' + fmtMoney(s.total_amount || 0);
+    document.getElementById('cardVisit').textContent = (s.overall_visit_rate || 0).toFixed(1) + '%';
+    document.getElementById('cardVisitSub').textContent = '上门 ' + fmt(s.total_visit || 0) + ' 人';
+    document.getElementById('cardSign').textContent = (s.overall_sign_rate || 0).toFixed(1) + '%';
+    document.getElementById('cardSignSub').textContent = '签单 ' + fmt(s.total_sign || 0) + ' 人';
+}
+
+function renderTable(rows) {
+    const tbody = document.getElementById('tableBody');
+    if (!rows || rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div><p>暂无数据，请在 excel 目录下放入数据文件</p></div></td></tr>';
+        return;
+    }
+    const startIdx = (state.page - 1) * state.pageSize;
+    tbody.innerHTML = rows.map((r, i) => {
+        const idx = startIdx + i + 1;
+        return `<tr>
+            <td class="row-num">${idx}</td>
+            <td><strong>${esc(r.campus)}</strong></td>
+            <td>${esc(r.month)}</td>
+            <td>${esc(r.grade)}</td>
+            <td>${renderBadge(r.consultation_99)}</td>
+            <td>${renderBadge(r.visit_status)}</td>
+            <td>${renderBadge(r.sign_status)}</td>
+            <td style="text-align:right;"><span class="amount">¥ ${(r.amount || 0).toFixed(2)}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderBadge(val) {
+    if (!val) return '<span class="badge badge-default">--</span>';
+    const v = val.trim();
+    const yes = v === '是' || v.toLowerCase() === 'yes' || v === 'y' || v === '1' || v === '✓' || v === 'true';
+    return yes
+        ? '<span class="badge badge-success">是</span>'
+        : '<span class="badge badge-default">' + esc(v) + '</span>';
+}
+
+function esc(s) {
+    if (!s && s !== 0) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showTableError(msg) {
+    document.getElementById('tableBody').innerHTML =
+        '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⚠️</div><p>' + esc(msg) + '</p></div></td></tr>';
+}
+
+function renderPagination() {
+    const totalPages = Math.ceil(state.total / state.pageSize) || 1;
+    document.getElementById('pageTotal').textContent = state.total.toLocaleString();
+    document.getElementById('pageCurrent').textContent = state.page;
+    document.getElementById('pageMax').textContent = totalPages;
+    document.getElementById('resultCount').textContent = state.total.toLocaleString();
+
+    const container = document.getElementById('pageBtns');
+    let html = '';
+
+    html += `<button class="page-btn ${state.page <= 1 ? 'disabled' : ''}" onclick="goPage(${state.page - 1})" ${state.page <= 1 ? 'disabled' : ''}>◀</button>`;
+
+    const show = 7;
+    let start = Math.max(1, state.page - Math.floor(show / 2));
+    let end = Math.min(totalPages, start + show - 1);
+    if (end - start < show - 1) start = Math.max(1, end - show + 1);
+
+    if (start > 1) {
+        html += `<button class="page-btn" onclick="goPage(1)">1</button>`;
+        if (start > 2) html += '<span class="page-ellipsis">…</span>';
+    }
+    for (let p = start; p <= end; p++) {
+        html += `<button class="page-btn ${p === state.page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
+    }
+    if (end < totalPages) {
+        if (end < totalPages - 1) html += '<span class="page-ellipsis">…</span>';
+        html += `<button class="page-btn" onclick="goPage(${totalPages})">${totalPages}</button>`;
+    }
+
+    html += `<button class="page-btn ${state.page >= totalPages ? 'disabled' : ''}" onclick="goPage(${state.page + 1})" ${state.page >= totalPages ? 'disabled' : ''}>▶</button>`;
+    container.innerHTML = html;
+    document.getElementById('jumpInput').value = '';
+}
+
+function goPage(p) {
+    const totalPages = Math.ceil(state.total / state.pageSize) || 1;
+    if (p < 1 || p > totalPages) return;
+    state.page = p;
+    loadData();
+    document.querySelector('.table-wrapper').scrollTop = 0;
+}
+
+function jumpPage() {
+    const p = parseInt(document.getElementById('jumpInput').value);
+    if (isNaN(p)) return;
+    goPage(p);
+}
+
+function changePageSize() {
+    state.pageSize = parseInt(document.getElementById('pageSizeSelect').value);
+    state.page = 1;
+    loadData();
+}
+
+function doSearch() {
+    state.filterCampus = document.getElementById('filterCampus').value;
+    state.filterMonth = document.getElementById('filterMonth').value;
+    state.filterGrade = document.getElementById('filterGrade').value;
+    state.filterKeyword = document.getElementById('filterKeyword').value.trim();
+    state.page = 1;
+    loadData();
+}
+
+function doReset() {
+    document.getElementById('filterCampus').value = '';
+    document.getElementById('filterMonth').value = '';
+    document.getElementById('filterGrade').value = '';
+    document.getElementById('filterKeyword').value = '';
+    state.filterCampus = '';
+    state.filterMonth = '';
+    state.filterGrade = '';
+    state.filterKeyword = '';
+    state.page = 1;
+    loadData();
+}
+
+function exportData() {
+    alert('导出功能开发中，当前版本请直接在 excel 目录查看原始文件。\n\n📂 Excel目录: {{.excelDir}}');
+}
+</script>
+</body>
+</html>

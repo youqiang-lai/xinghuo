@@ -20,12 +20,20 @@ func DataApiGroup(engine *gin.Engine, exeDir string) {
 		pageHandler(c, exeDir)
 	})
 
-	// 数据明细列表页
+	// 数据明细列表页（深色大屏风）
 	engine.GET("/data/list/api", func(c *gin.Context) {
 		listApiHandler(c, exeDir)
 	})
 	engine.GET("/data/list", func(c *gin.Context) {
 		listPageHandler(c, exeDir)
+	})
+
+	// 数据明细列表页（白色卡片风）
+	engine.GET("/data/list2/api", func(c *gin.Context) {
+		list2ApiHandler(c, exeDir)
+	})
+	engine.GET("/data/list2", func(c *gin.Context) {
+		list2PageHandler(c, exeDir)
 	})
 }
 
@@ -123,6 +131,20 @@ func listApiHandler(c *gin.Context, exeDir string) {
 func listPageHandler(c *gin.Context, exeDir string) {
 	absDir, _ := filepath.Abs(exeDir)
 	c.HTML(http.StatusOK, "list.html", gin.H{
+		"title":    "星火咨询数据明细",
+		"excelDir": filepath.Join(absDir, "excel"),
+	})
+}
+
+// list2ApiHandler 返回列表数据JSON（与listApiHandler一致，支持筛选+分页）
+func list2ApiHandler(c *gin.Context, exeDir string) {
+	listApiHandler(c, exeDir)
+}
+
+// list2PageHandler 返回白色卡片风格的数据明细列表页面
+func list2PageHandler(c *gin.Context, exeDir string) {
+	absDir, _ := filepath.Abs(exeDir)
+	c.HTML(http.StatusOK, "list2.html", gin.H{
 		"title":    "星火咨询数据明细",
 		"excelDir": filepath.Join(absDir, "excel"),
 	})
