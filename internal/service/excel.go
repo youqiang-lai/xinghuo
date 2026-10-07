@@ -290,3 +290,106 @@ func isYes(s string) bool {
 	s = strings.TrimSpace(strings.ToLower(s))
 	return s == "是" || s == "yes" || s == "y" || s == "1" || s == "✓" || s == "true"
 }
+
+// ==================== 筛选与分页 ====================
+
+// FilterRows 按校区、月份、年级、关键词筛选
+func FilterRows(rows []model.ExcelRow, campus, month, grade, keyword string) []model.ExcelRow {
+	if campus == "" && month == "" && grade == "" && keyword == "" {
+		return rows
+	}
+
+	var result []model.ExcelRow
+	kw := strings.ToLower(strings.TrimSpace(keyword))
+
+	for _, row := range rows {
+		if campus != "" && row.Campus != campus {
+			continue
+		}
+		if month != "" && row.Month != month {
+			continue
+		}
+		if grade != "" && row.Grade != grade {
+			continue
+		}
+		if kw != "" {
+			if !strings.Contains(strings.ToLower(row.Campus), kw) &&
+				!strings.Contains(strings.ToLower(row.Month), kw) &&
+				!strings.Contains(strings.ToLower(row.Grade), kw) {
+				continue
+			}
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
+// ParsePagination 解析分页参数
+func ParsePagination(pageStr, pageSizeStr string) (page, pageSize, offset int) {
+	page = 1
+	pageSize = 20
+	if v, err := strconv.Atoi(pageStr); err == nil && v > 0 {
+		page = v
+	}
+	if v, err := strconv.Atoi(pageSizeStr); err == nil && v > 0 && v <= 200 {
+		pageSize = v
+	}
+	offset = (page - 1) * pageSize
+	return
+}
+
+// PaginateRows 分页截取
+func PaginateRows(rows []model.ExcelRow, offset, pageSize int) []model.ExcelRow {
+	if offset >= len(rows) {
+		return nil
+	}
+	end := offset + pageSize
+	if end > len(rows) {
+		end = len(rows)
+	}
+	return rows[offset:end]
+}
+
+// ExtractFilterOptions 提取筛选下拉选项（去重排序）
+func ExtractFilterOptions(rows []model.ExcelRow) (campuses, months, grades []string) {
+	campusSet := make(map[string]struct{})
+	monthSet := make(map[string]struct{})
+	gradeSet := make(map[string]struct{})
+
+	for _, row := range rows {
+		if row.Campus != "" {
+			campusSet[row.Campus] = struct{}{}
+		}
+		if row.Month != "" {
+			monthSet[row.Month] = struct{}{}
+		}
+		if row.Grade != "" {
+			gradeSet[row.Grade] = struct{}{}
+		}
+	}
+
+	for k := range campusSet {
+		campuses = append(campuses, k)
+	}
+	for k := range monthSet {
+		months = append(months, k)
+	}
+	for k := range gradeSet {
+		grades = append(grades, k)
+	}
+
+	sortStrings(campuses)
+	sortStrings(months)
+	sortStrings(grades)
+	return
+}
+
+func sortStrings(arr []string) {
+	for i := 0; i < len(arr); i++ {
+		for j := i + 1; j < len(arr); j++ {
+			if arr[i] > arr[j] {
+				arr[i], arr[j] = arr[j], arr[i]
+			}
+		}
+	}
+}

@@ -12,14 +12,20 @@ import (
 
 // DataApiGroup 注册数据统计相关接口
 func DataApiGroup(engine *gin.Engine, exeDir string) {
-	// API接口：返回统计数据JSON
+	// 大屏统计页
 	engine.GET("/data/index/api", func(c *gin.Context) {
 		dataHandler(c, exeDir)
 	})
-
-	// 页面接口：返回前端页面
 	engine.GET("/data/index", func(c *gin.Context) {
 		pageHandler(c, exeDir)
+	})
+
+	// 数据明细列表页
+	engine.GET("/data/list/api", func(c *gin.Context) {
+		listApiHandler(c, exeDir)
+	})
+	engine.GET("/data/list", func(c *gin.Context) {
+		listPageHandler(c, exeDir)
 	})
 }
 
@@ -37,9 +43,7 @@ func dataHandler(c *gin.Context, exeDir string) {
 
 	stats := service.CalculateStats(rows)
 	stats.Summary.FileCount = fileCount
-
-	// 尝试读取excel日期（取所有文件中最早的年份）
-	stats.RawRows = nil // 默认不返回明细
+	stats.RawRows = nil
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    0,
@@ -48,29 +52,78 @@ func dataHandler(c *gin.Context, exeDir string) {
 	})
 }
 
-// pageHandler 返回数据统计页面
+// pageHandler 返回数据统计大屏页面
 func pageHandler(c *gin.Context, exeDir string) {
-	// 先尝试统计，如果有错误也展示页面(带错误信息)
 	rows, fileCount, err := service.ReadExcelDir(exeDir)
 	errorMsg := ""
 	stats := service.CalculateStats(rows)
 	stats.Summary.FileCount = fileCount
-
-	if err != nil {
-		// 目录不存在或没有文件时，展示空数据
-		if !os.IsNotExist(err) {
-			errorMsg = err.Error()
-		}
-		// 仍然展示页面，只是数据为空
+	if err != nil && !os.IsNotExist(err) {
+		errorMsg = err.Error()
 	}
-
-	// 将exeDir转为绝对路径
 	absDir, _ := filepath.Abs(exeDir)
-
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{
 		"title":    "星火数据统计大屏",
 		"error":    errorMsg,
 		"stats":    stats,
+		"excelDir": filepath.Join(absDir, "excel"),
+	})
+}
+
+// listApiHandler 返回列表数据JSON（支持筛选+分页）
+func listApiHandler(c *gin.Context, exeDir string) {
+	rows, fileCount, err := service.ReadExcelDir(exeDir)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    -1,
+			"message": err.Error(),
+			"data":    nil,
+		})
+		return
+	}
+
+	stats := service.CalculateStats(rows)
+	stats.Summary.FileCount = fileCount
+	stats.RawRows = nil // API不返回明细
+
+	// 筛选原始行数据
+	filteredRows := service.FilterRows(rows,
+		c.Query("campus"),
+		c.Query("month"),
+		c.Query("grade"),
+		c.Query("keyword"),
+	)
+
+	total := len(filteredRows)
+	page, pageSize, offset := service.ParsePagination(c.Query("page"), c.Query("pageSize"))
+	pagedRows := service.PaginateRows(filteredRows, offset, pageSize)
+
+	// 提取筛选用的下拉选项
+	campuses, months, grades := service.ExtractFilterOptions(rows)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"summary":  stats.Summary,
+			"rows":     pagedRows,
+			"total":    total,
+			"page":     page,
+			"pageSize": pageSize,
+			"filters": gin.H{
+				"campuses": campuses,
+				"months":   months,
+				"grades":   grades,
+			},
+		},
+	})
+}
+
+// listPageHandler 返回数据明细列表页面
+func listPageHandler(c *gin.Context, exeDir string) {
+	absDir, _ := filepath.Abs(exeDir)
+	c.HTML(http.StatusOK, "list.html", gin.H{
+		"title":    "星火咨询数据明细",
 		"excelDir": filepath.Join(absDir, "excel"),
 	})
 }

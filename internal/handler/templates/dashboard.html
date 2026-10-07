@@ -338,6 +338,48 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        /* ========== 导航标签 ========== */
+        .nav-tabs {
+            display: flex; gap: 0; margin-bottom: 0;
+            position: relative;
+        }
+        .nav-tab {
+            padding: 12px 28px;
+            font-size: 15px; letter-spacing: 2px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            background: rgba(6, 14, 54, 0.5);
+            color: var(--text);
+            transition: all 0.3s;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .nav-tab:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        .nav-tab.active {
+            background: var(--bg-panel);
+            color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 -4px 15px rgba(0, 200, 255, 0.1);
+        }
+        .nav-tab.active::after {
+            content: '';
+            position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 2px;
+            background: var(--bg-panel);
+        }
+        .header {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 8px 8px 8px;
+        }
     </style>
 </head>
 <body>
@@ -346,6 +388,12 @@
 <button class="refresh-btn" onclick="refreshData()" title="刷新数据">⟳</button>
 
 <div class="container">
+    <!-- 导航标签 -->
+    <div class="nav-tabs">
+        <span class="nav-tab active">📊 数据大屏</span>
+        <a href="/data/list" class="nav-tab">📋 数据明细</a>
+    </div>
+
     <!-- 标题 -->
     <div class="header">
         <h1>星 火 数 据 统 计 大 屏</h1>

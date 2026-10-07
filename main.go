@@ -24,7 +24,7 @@ func main() {
 	// 设置 gin 模式
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(gin.LoggerWithWriter(gin.DefaultWriter, "/data/index/api"), gin.Recovery())
+	router.Use(gin.LoggerWithWriter(gin.DefaultWriter, "/data/index/api", "/data/list/api"), gin.Recovery())
 
 	// 加载HTML模板（从embed或外部的templates目录）
 	loadTemplates(router)
