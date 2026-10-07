@@ -104,49 +104,122 @@ func readXls(filePath string) ([]model.ExcelRow, error) {
 	return parseRows(rows), nil
 }
 
-// parseRows 解析行数据，跳过表头，提取B列(校区)、C列(月份)及后续统计列
-// Excel列对应:
-//
-//	A(1)  B(2)校区  C(3)月份  D(4)年级  E(5)99元咨询课  F(6)是否上门  G(7)是否签单  H(8)金额
+// colMap 表头中文名 → 数据列索引的映射
+type colMap struct {
+	campusIdx         int // 校区
+	monthIdx          int // 月份
+	gradeIdx          int // 年级
+	consultation99Idx int // 99元咨询课
+	visitIdx          int // 是否上门
+	signIdx           int // 是否签单
+	amountIdx         int // 金额
+}
+
+// fieldKeywords 每个字段对应的表头匹配关键词（包含任一关键词即匹配）
+var fieldKeywords = map[string][]string{
+	"campus":         {"校区"},
+	"month":          {"月份", "日期", "时间"},
+	"grade":          {"年级"},
+	"consultation99": {"99", "咨询课"},
+	"visit":          {"上门"},
+	"sign":           {"签单"},
+	"amount":         {"金额", "收入"},
+}
+
+// buildColMap 根据表头行构建列索引映射
+func buildColMap(header []string) colMap {
+	cm := colMap{
+		campusIdx:         -1,
+		monthIdx:          -1,
+		gradeIdx:          -1,
+		consultation99Idx: -1,
+		visitIdx:          -1,
+		signIdx:           -1,
+		amountIdx:         -1,
+	}
+	for i, h := range header {
+		h = strings.TrimSpace(h)
+		if h == "" {
+			continue
+		}
+		for field, keywords := range fieldKeywords {
+			for _, kw := range keywords {
+				if strings.Contains(h, kw) {
+					switch field {
+					case "campus":
+						// 校区：如果已匹配到更精准的（仅"校区"不含"学校"歧义），不覆盖；
+						// 但如果标题本身包含"学校"也行，优先取包含"校区"的
+						if cm.campusIdx == -1 || strings.Contains(h, "校区") {
+							cm.campusIdx = i
+						}
+					case "month":
+						if cm.monthIdx == -1 {
+							cm.monthIdx = i
+						}
+					case "grade":
+						if cm.gradeIdx == -1 {
+							cm.gradeIdx = i
+						}
+					case "consultation99":
+						if cm.consultation99Idx == -1 {
+							cm.consultation99Idx = i
+						}
+					case "visit":
+						if cm.visitIdx == -1 {
+							cm.visitIdx = i
+						}
+					case "sign":
+						// 签单：避免把"是否上门"列也匹配为签单（前序逻辑上门先匹配），
+						// 但如果表头包含"签单"更精准，优先使用包含"签单"的列
+						if cm.signIdx == -1 || strings.Contains(h, "签单") {
+							cm.signIdx = i
+						}
+					case "amount":
+						if cm.amountIdx == -1 {
+							cm.amountIdx = i
+						}
+					}
+					break // 该字段匹配到了就跳出 keywords 循环
+				}
+			}
+		}
+	}
+	return cm
+}
+
+// getStr 安全获取行中第i列的值
+func getStr(row []string, i int) string {
+	if i < 0 || i >= len(row) {
+		return ""
+	}
+	return strings.TrimSpace(row[i])
+}
+
+// parseRows 根据表头行动态匹配列，解析后续数据行
 func parseRows(rows [][]string) []model.ExcelRow {
 	if len(rows) < 2 {
 		return nil
 	}
 
+	// 第一行是表头
+	cm := buildColMap(rows[0])
+
 	var result []model.ExcelRow
 
-	// 跳过第一行（表头）
 	for i := 1; i < len(rows); i++ {
 		row := rows[i]
-		excelRow := model.ExcelRow{}
+		excelRow := model.ExcelRow{
+			Campus:         getStr(row, cm.campusIdx),
+			Month:          getStr(row, cm.monthIdx),
+			Grade:          getStr(row, cm.gradeIdx),
+			Consultation99: getStr(row, cm.consultation99Idx),
+			VisitStatus:    getStr(row, cm.visitIdx),
+			SignStatus:     getStr(row, cm.signIdx),
+		}
 
-		// B列 → index 1
-		if len(row) > 1 {
-			excelRow.Campus = strings.TrimSpace(row[1])
-		}
-		// C列 → index 2
-		if len(row) > 2 {
-			excelRow.Month = strings.TrimSpace(row[2])
-		}
-		// D列 → index 3 (年级)
-		if len(row) > 3 {
-			excelRow.Grade = strings.TrimSpace(row[3])
-		}
-		// E列 → index 4 (99元咨询课)
-		if len(row) > 4 {
-			excelRow.Consultation99 = strings.TrimSpace(row[4])
-		}
-		// F列 → index 5 (是否上门)
-		if len(row) > 5 {
-			excelRow.VisitStatus = strings.TrimSpace(row[5])
-		}
-		// G列 → index 6 (是否签单)
-		if len(row) > 6 {
-			excelRow.SignStatus = strings.TrimSpace(row[6])
-		}
-		// H列 → index 7 (金额)
-		if len(row) > 7 {
-			amount, _ := strconv.ParseFloat(strings.TrimSpace(strings.ReplaceAll(row[7], ",", "")), 64)
+		// 金额
+		if cm.amountIdx >= 0 && cm.amountIdx < len(row) {
+			amount, _ := strconv.ParseFloat(strings.TrimSpace(strings.ReplaceAll(row[cm.amountIdx], ",", "")), 64)
 			excelRow.Amount = amount
 		}
 
