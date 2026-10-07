@@ -15,14 +15,14 @@ type ExcelRow struct {
 // CampusStat 校区维度统计
 type CampusStat struct {
 	Campus           string  `json:"campus"`
-	TotalCount       int     `json:"total_count"`        // 总咨询数
-	VisitCount       int     `json:"visit_count"`        // 已上门数
-	VisitAmountCount int     `json:"visit_amount_count"` // 已上门且金额>0
-	AmountCount      int     `json:"amount_count"`       // 金额>0的数量
-	SignCount        int     `json:"sign_count"`         // 签单数（原始值保留）
-	TotalAmount      float64 `json:"total_amount"`       // 总金额
-	VisitRate        float64 `json:"visit_rate"`         // 上门转化率
-	SignRate         float64 `json:"sign_rate"`          // 签单转化率
+	TotalCount       int     `json:"total_count"`         // 总咨询数
+	VisitCount       int     `json:"visit_count"`         // 已上门数
+	VisitAmountCount int     `json:"visit_amount_count"`  // 已上门且金额>0
+	AmountCount      int     `json:"amount_count"`        // 金额>0的数量
+	SignCount        int     `json:"sign_count"`          // 签单数
+	TotalAmount      float64 `json:"total_amount"`        // 总金额
+	VisitRate        float64 `json:"visit_rate"`          // 上门转化率: 已上门且金额>0 / 已上门
+	SignRate         float64 `json:"sign_rate"`           // 签单转化率: 金额>0 / 总数
 }
 
 // MonthStat 月度维度统计

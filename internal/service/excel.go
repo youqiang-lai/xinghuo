@@ -58,62 +58,51 @@ func ReadExcelDir(baseDir string) ([]model.ExcelRow, int, error) {
 	return allRows, fileCount, nil
 }
 
-// readXlsx 读取xlsx文件
 func readXlsx(filePath string) ([]model.ExcelRow, error) {
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("打开xlsx失败: %w", err)
 	}
 	defer f.Close()
-
 	sheetName := f.GetSheetName(0)
 	if sheetName == "" {
 		return nil, fmt.Errorf("未找到有效的sheet")
 	}
-
 	rows, err := f.GetRows(sheetName)
 	if err != nil {
 		return nil, fmt.Errorf("读取sheet失败: %w", err)
 	}
-
 	return parseRows(rows), nil
 }
 
-// readXls 读取xls文件（旧格式）
 func readXls(filePath string) ([]model.ExcelRow, error) {
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("xls文件请转换为xlsx格式后读取: %w", err)
 	}
 	defer f.Close()
-
 	sheetName := f.GetSheetName(0)
 	if sheetName == "" {
 		return nil, fmt.Errorf("未找到有效的sheet")
 	}
-
 	rows, err := f.GetRows(sheetName)
 	if err != nil {
 		return nil, fmt.Errorf("读取sheet失败: %w", err)
 	}
-
 	return parseRows(rows), nil
 }
 
-// colMap 表头中文名 → 数据列索引的映射
 type colMap struct {
-	campusIdx         int // 校区
-	monthIdx          int // 月份
-	gradeIdx          int // 年级
-	consultation99Idx int // 99元咨询课
-	visitIdx          int // 是否上门
-	signIdx           int // 是否签单
-	amountIdx         int // 金额
-	followUpIdx       int // 校区跟进结果
+	campusIdx         int
+	monthIdx          int
+	gradeIdx          int
+	consultation99Idx int
+	visitIdx          int
+	signIdx           int
+	amountIdx         int
+	followUpIdx       int
 }
 
-// fieldKeywords 每个字段对应的表头匹配关键词
-// campus、followUp 使用全字匹配（h == kw），其余使用包含匹配（Contains）
 var fieldKeywords = map[string][]string{
 	"campus":         {"校区"},
 	"month":          {"月份"},
@@ -125,18 +114,17 @@ var fieldKeywords = map[string][]string{
 	"followUp":       {"校区跟进结果"},
 }
 
-// matchField 判断表头单元格 h 是否匹配字段 field
+// matchField 判断表头的 h 是否匹配字段 field
+// campus/followUp/visit/sign 全字匹配(h==kw)，避免 "校区跟进结果"→"校区"、"预约到上门日期"→"是否已上门" 的误匹配
 func matchField(field string, h string, kw string) bool {
 	switch field {
-	case "campus", "followUp":
-		// 全字匹配：避免"校区跟进结果"误匹配到"校区"
+	case "campus", "followUp", "visit", "sign":
 		return h == kw
 	default:
 		return strings.Contains(h, kw)
 	}
 }
 
-// buildColMap 根据表头行构建列索引映射
 func buildColMap(header []string) colMap {
 	cm := colMap{
 		campusIdx:         -1,
@@ -198,7 +186,6 @@ func buildColMap(header []string) colMap {
 	return cm
 }
 
-// getStr 安全获取行中第i列的值
 func getStr(row []string, i int) string {
 	if i < 0 || i >= len(row) {
 		return ""
@@ -206,16 +193,12 @@ func getStr(row []string, i int) string {
 	return strings.TrimSpace(row[i])
 }
 
-// parseRows 根据表头行动态匹配列，解析后续数据行
 func parseRows(rows [][]string) []model.ExcelRow {
 	if len(rows) < 2 {
 		return nil
 	}
-
 	cm := buildColMap(rows[0])
-
 	var result []model.ExcelRow
-
 	for i := 1; i < len(rows); i++ {
 		row := rows[i]
 		excelRow := model.ExcelRow{
@@ -227,23 +210,21 @@ func parseRows(rows [][]string) []model.ExcelRow {
 			SignStatus:     getStr(row, cm.signIdx),
 			FollowUp:       getStr(row, cm.followUpIdx),
 		}
-
 		if cm.amountIdx >= 0 && cm.amountIdx < len(row) {
 			amount, _ := strconv.ParseFloat(strings.TrimSpace(strings.ReplaceAll(row[cm.amountIdx], ",", "")), 64)
 			excelRow.Amount = amount
 		}
-
 		if excelRow.Campus == "" && excelRow.Month == "" && excelRow.Grade == "" {
 			continue
 		}
-
 		result = append(result, excelRow)
 	}
-
 	return result
 }
 
-// CalculateStats 根据原始数据计算各维度统计
+// CalculateStats 多维度统计
+// 上门转化率 = 已上门且金额>0 / 已上门 × 100%
+// 签单转化率 = 金额>0 / 总数 × 100%
 func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 	campusMap := make(map[string]*model.CampusStat)
 	monthMap := make(map[string]*model.MonthStat)
@@ -251,33 +232,49 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 
 	totalRecords := 0
 	totalVisit := 0
+	totalVisitAmount := 0
+	totalAmountCount := 0
 	totalSign := 0
 	totalAmount := 0.0
 
 	for _, row := range rows {
 		totalRecords++
-
 		isVisit := isYes(row.VisitStatus)
+		isSign := isYes(row.SignStatus)
+		hasAmount := row.Amount > 0
+		totalAmount += row.Amount
+
 		if isVisit {
 			totalVisit++
+			if hasAmount {
+				totalVisitAmount++
+			}
 		}
-		isSign := isYes(row.SignStatus)
+		if hasAmount {
+			totalAmountCount++
+		}
 		if isSign {
 			totalSign++
 		}
-		totalAmount += row.Amount
 
 		if row.Campus != "" {
 			if _, ok := campusMap[row.Campus]; !ok {
 				campusMap[row.Campus] = &model.CampusStat{Campus: row.Campus}
 			}
-			campusMap[row.Campus].TotalCount++
-			campusMap[row.Campus].TotalAmount += row.Amount
+			cs := campusMap[row.Campus]
+			cs.TotalCount++
+			cs.TotalAmount += row.Amount
 			if isVisit {
-				campusMap[row.Campus].VisitCount++
+				cs.VisitCount++
+				if hasAmount {
+					cs.VisitAmountCount++
+				}
+			}
+			if hasAmount {
+				cs.AmountCount++
 			}
 			if isSign {
-				campusMap[row.Campus].SignCount++
+				cs.SignCount++
 			}
 		}
 
@@ -285,13 +282,20 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			if _, ok := monthMap[row.Month]; !ok {
 				monthMap[row.Month] = &model.MonthStat{Month: row.Month}
 			}
-			monthMap[row.Month].TotalCount++
-			monthMap[row.Month].TotalAmount += row.Amount
+			ms := monthMap[row.Month]
+			ms.TotalCount++
+			ms.TotalAmount += row.Amount
 			if isVisit {
-				monthMap[row.Month].VisitCount++
+				ms.VisitCount++
+				if hasAmount {
+					ms.VisitAmountCount++
+				}
+			}
+			if hasAmount {
+				ms.AmountCount++
 			}
 			if isSign {
-				monthMap[row.Month].SignCount++
+				ms.SignCount++
 			}
 		}
 
@@ -299,49 +303,63 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			if _, ok := gradeMap[row.Grade]; !ok {
 				gradeMap[row.Grade] = &model.GradeStat{Grade: row.Grade}
 			}
-			gradeMap[row.Grade].TotalCount++
-			gradeMap[row.Grade].TotalAmount += row.Amount
+			gs := gradeMap[row.Grade]
+			gs.TotalCount++
+			gs.TotalAmount += row.Amount
 			if isVisit {
-				gradeMap[row.Grade].VisitCount++
+				gs.VisitCount++
+				if hasAmount {
+					gs.VisitAmountCount++
+				}
+			}
+			if hasAmount {
+				gs.AmountCount++
 			}
 			if isSign {
-				gradeMap[row.Grade].SignCount++
+				gs.SignCount++
 			}
 		}
 	}
 
+	// 上门转化率 = 已上门且金额>0 / 已上门
+	// 签单转化率 = 金额>0 / 总数
+	calcRates := func(visit, visitAmount, amountCount, total int) (float64, float64) {
+		vr := 0.0
+		if visit > 0 {
+			vr = float64(visitAmount) / float64(visit) * 100
+		}
+		sr := 0.0
+		if total > 0 {
+			sr = float64(amountCount) / float64(total) * 100
+		}
+		return vr, sr
+	}
+
 	var campusStats []model.CampusStat
 	for _, v := range campusMap {
-		if v.TotalCount > 0 {
-			v.VisitRate = float64(v.VisitCount) / float64(v.TotalCount) * 100
-			v.SignRate = float64(v.SignCount) / float64(v.TotalCount) * 100
-		}
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
 		campusStats = append(campusStats, *v)
 	}
 
 	var monthStats []model.MonthStat
 	for _, v := range monthMap {
-		if v.TotalCount > 0 {
-			v.VisitRate = float64(v.VisitCount) / float64(v.TotalCount) * 100
-			v.SignRate = float64(v.SignCount) / float64(v.TotalCount) * 100
-		}
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
 		monthStats = append(monthStats, *v)
 	}
 
 	var gradeStats []model.GradeStat
 	for _, v := range gradeMap {
-		if v.TotalCount > 0 {
-			v.VisitRate = float64(v.VisitCount) / float64(v.TotalCount) * 100
-			v.SignRate = float64(v.SignCount) / float64(v.TotalCount) * 100
-		}
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
 		gradeStats = append(gradeStats, *v)
 	}
 
 	overallVisitRate := 0.0
+	if totalVisit > 0 {
+		overallVisitRate = float64(totalVisitAmount) / float64(totalVisit) * 100
+	}
 	overallSignRate := 0.0
 	if totalRecords > 0 {
-		overallVisitRate = float64(totalVisit) / float64(totalRecords) * 100
-		overallSignRate = float64(totalSign) / float64(totalRecords) * 100
+		overallSignRate = float64(totalAmountCount) / float64(totalRecords) * 100
 	}
 
 	return model.DashboardData{
@@ -361,23 +379,17 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 	}
 }
 
-// isYes 判断字符串是否为"是"
 func isYes(s string) bool {
 	s = strings.TrimSpace(strings.ToLower(s))
 	return s == "是" || s == "yes" || s == "y" || s == "1" || s == "✓" || s == "true"
 }
 
-// ==================== 筛选与分页 ====================
-
-// FilterRows 按校区、月份、年级、关键词筛选
 func FilterRows(rows []model.ExcelRow, campus, month, grade, keyword string) []model.ExcelRow {
 	if campus == "" && month == "" && grade == "" && keyword == "" {
 		return rows
 	}
-
 	var result []model.ExcelRow
 	kw := strings.ToLower(strings.TrimSpace(keyword))
-
 	for _, row := range rows {
 		if campus != "" && row.Campus != campus {
 			continue
@@ -401,7 +413,6 @@ func FilterRows(rows []model.ExcelRow, campus, month, grade, keyword string) []m
 	return result
 }
 
-// ParsePagination 解析分页参数
 func ParsePagination(pageStr, pageSizeStr string) (page, pageSize, offset int) {
 	page = 1
 	pageSize = 20
@@ -415,7 +426,6 @@ func ParsePagination(pageStr, pageSizeStr string) (page, pageSize, offset int) {
 	return
 }
 
-// PaginateRows 分页截取
 func PaginateRows(rows []model.ExcelRow, offset, pageSize int) []model.ExcelRow {
 	if offset >= len(rows) {
 		return nil
@@ -427,12 +437,10 @@ func PaginateRows(rows []model.ExcelRow, offset, pageSize int) []model.ExcelRow 
 	return rows[offset:end]
 }
 
-// ExtractFilterOptions 提取筛选下拉选项（去重排序）
 func ExtractFilterOptions(rows []model.ExcelRow) (campuses, months, grades []string) {
 	campusSet := make(map[string]struct{})
 	monthSet := make(map[string]struct{})
 	gradeSet := make(map[string]struct{})
-
 	for _, row := range rows {
 		if row.Campus != "" {
 			campusSet[row.Campus] = struct{}{}
@@ -444,7 +452,6 @@ func ExtractFilterOptions(rows []model.ExcelRow) (campuses, months, grades []str
 			gradeSet[row.Grade] = struct{}{}
 		}
 	}
-
 	for k := range campusSet {
 		campuses = append(campuses, k)
 	}
@@ -454,7 +461,6 @@ func ExtractFilterOptions(rows []model.ExcelRow) (campuses, months, grades []str
 	for k := range gradeSet {
 		grades = append(grades, k)
 	}
-
 	sortStrings(campuses)
 	sortStrings(months)
 	sortStrings(grades)

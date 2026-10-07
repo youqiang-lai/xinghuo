@@ -18,16 +18,17 @@ func TestParseRows(t *testing.T) {
 
 	result := CalculateStats(parseRows(rows))
 
-	fmt.Printf("Summary: Records=%d Visit=%d VisitAmount=%d AmountCount=%d Sign=%d TotalAmount=%.0f\n",
-		result.Summary.TotalRecords, result.Summary.TotalVisit, 0, 0,
+	fmt.Printf("Records=%d Visit=%d VisitAmount=%d AmountCount=%d Sign=%d TotalAmount=%.0f\n",
+		result.Summary.TotalRecords, result.Summary.TotalVisit,
+		0, 0,
 		result.Summary.TotalSign, result.Summary.TotalAmount)
 	fmt.Printf("VisitRate(已上门且金额>0/已上门)=%.1f%% SignRate(金额>0/总数)=%.1f%%\n",
 		result.Summary.OverallVisitRate, result.Summary.OverallSignRate)
 
 	for _, cs := range result.CampusStats {
 		fmt.Printf("Campus:%s total=%d visit=%d visitAmt=%d amtCnt=%d sign=%d amt=%.0f vr=%.1f%% sr=%.1f%%\n",
-			cs.Campus, cs.TotalCount, cs.VisitCount, cs.VisitAmountCount, cs.AmountCount,
-			cs.SignCount, cs.TotalAmount, cs.VisitRate, cs.SignRate)
+			cs.Campus, cs.TotalCount, cs.VisitCount, cs.VisitAmountCount,
+			cs.AmountCount, cs.SignCount, cs.TotalAmount, cs.VisitRate, cs.SignRate)
 	}
 
 	if result.Summary.TotalRecords != 6 {
@@ -36,13 +37,13 @@ func TestParseRows(t *testing.T) {
 	if result.Summary.TotalVisit != 4 {
 		t.Errorf("TotalVisit: want 4, got %d", result.Summary.TotalVisit)
 	}
-	// 4条已上门且全部金额>0 → VisitRate=100%
+	// 4上门且全部金额>0 → VisitRate=100%
 	if result.Summary.OverallVisitRate != 100.0 {
-		t.Errorf("OverallVisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
+		t.Errorf("VisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
 	}
 	// 6条全部金额>0 → SignRate=100%
 	if result.Summary.OverallSignRate != 100.0 {
-		t.Errorf("OverallSignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
+		t.Errorf("SignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
 	}
 	if result.Summary.TotalSign != 3 {
 		t.Errorf("TotalSign: want 3, got %d", result.Summary.TotalSign)
@@ -59,7 +60,6 @@ func TestParseRowsColumnOrder(t *testing.T) {
 	}
 
 	result := CalculateStats(parseRows(rows))
-
 	fmt.Printf("ColOrder: Records=%d Visit=%d Sign=%d Amount=%.0f VisitRate=%.1f%% SignRate=%.1f%%\n",
 		result.Summary.TotalRecords, result.Summary.TotalVisit, result.Summary.TotalSign,
 		result.Summary.TotalAmount, result.Summary.OverallVisitRate, result.Summary.OverallSignRate)
@@ -70,13 +70,13 @@ func TestParseRowsColumnOrder(t *testing.T) {
 	if result.Summary.TotalVisit != 3 {
 		t.Errorf("TotalVisit: want 3, got %d", result.Summary.TotalVisit)
 	}
-	// 3条已上门且全部金额>0 → 100%
+	// 3上门且全部金额>0 → 100%
 	if result.Summary.OverallVisitRate != 100.0 {
-		t.Errorf("OverallVisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
+		t.Errorf("VisitRate: want 100%%, got %.1f%%", result.Summary.OverallVisitRate)
 	}
 	// 4条全部金额>0 → 100%
 	if result.Summary.OverallSignRate != 100.0 {
-		t.Errorf("OverallSignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
+		t.Errorf("SignRate: want 100%%, got %.1f%%", result.Summary.OverallSignRate)
 	}
 	if result.Summary.TotalAmount != 50000.0 {
 		t.Errorf("TotalAmount: want 50000, got %.2f", result.Summary.TotalAmount)
