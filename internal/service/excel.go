@@ -476,3 +476,50 @@ func sortStrings(arr []string) {
 		}
 	}
 }
+
+// CampusSummary 校区汇总
+type CampusSummary struct {
+	Campus      string           `json:"campus"`
+	TotalCount  int              `json:"total_count"`  // 对接资源总量
+	VisitCount  int              `json:"visit_count"`  // 上门量
+	SignCount   int              `json:"sign_count"`   // 签单量
+	AmountCount int              `json:"amount_count"` // 金额>0数
+	TotalAmount float64          `json:"total_amount"` // 总金额
+	Rows        []model.ExcelRow `json:"rows"`         // 该校区明细行
+}
+
+// GroupByCampus 按校区分组并统计
+func GroupByCampus(rows []model.ExcelRow) []CampusSummary {
+	m := make(map[string]*CampusSummary)
+	var order []string
+
+	for _, row := range rows {
+		c := row.Campus
+		if c == "" {
+			c = "未知校区"
+		}
+		if _, ok := m[c]; !ok {
+			m[c] = &CampusSummary{Campus: c}
+			order = append(order, c)
+		}
+		cs := m[c]
+		cs.TotalCount++
+		cs.TotalAmount += row.Amount
+		if isYes(row.VisitStatus) {
+			cs.VisitCount++
+		}
+		if isYes(row.SignStatus) {
+			cs.SignCount++
+		}
+		if row.Amount > 0 {
+			cs.AmountCount++
+		}
+		cs.Rows = append(cs.Rows, row)
+	}
+
+	var result []CampusSummary
+	for _, c := range order {
+		result = append(result, *m[c])
+	}
+	return result
+}

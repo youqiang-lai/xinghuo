@@ -20,7 +20,6 @@
             --border-light: #f1f5f9;
             --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
             --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
             --radius: 12px;
             --radius-sm: 8px;
         }
@@ -36,491 +35,168 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ========== 顶部导航 ========== */
         .topbar {
             background: #fff;
             border-bottom: 1px solid var(--border);
             padding: 0 32px;
             height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        .topbar .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.3px;
-        }
+        .topbar .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
         .topbar .logo .icon {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             background: linear-gradient(135deg, var(--primary), #7c5cfc);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 16px;
         }
-        .topbar .topbar-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .topbar .topbar-links { display: flex; align-items: center; gap: 8px; }
         .topbar .topbar-links a {
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.2s;
+            padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
+            color: var(--text-secondary); text-decoration: none; transition: all 0.2s;
         }
-        .topbar .topbar-links a:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-        .topbar .topbar-links a.active {
-            background: var(--primary);
-            color: #fff;
-        }
+        .topbar .topbar-links a:hover { background: var(--primary-light); color: var(--primary); }
+        .topbar .topbar-links a.active { background: var(--primary); color: #fff; }
 
-        /* ========== 主容器 ========== */
-        .main {
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 24px 24px 40px;
-        }
+        .main { max-width: 1320px; margin: 0 auto; padding: 24px 24px 40px; }
 
-        /* ========== 页面标题 ========== */
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-        .page-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.3px;
-        }
-        .page-header .breadcrumb {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .page-header .breadcrumb span {
-            color: var(--text-secondary);
-        }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+        .page-header .breadcrumb { font-size: 13px; color: var(--text-muted); }
+        .page-header .breadcrumb span { color: var(--text-secondary); }
 
-        /* ========== 统计卡片行 ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
         .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px;
+            box-shadow: var(--shadow); display: flex; align-items: flex-start; gap: 16px;
+            transition: all 0.2s; border: 1px solid transparent;
         }
-        .stat-card:hover {
-            box-shadow: var(--shadow-lg);
-            border-color: var(--border);
-            transform: translateY(-1px);
-        }
-        .stat-card .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
+        .stat-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-color: var(--border); transform: translateY(-1px); }
+        .stat-card .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
         .stat-card .stat-icon.blue   { background: #eef1fe; color: var(--primary); }
         .stat-card .stat-icon.green  { background: #ecfdf5; color: var(--success); }
         .stat-card .stat-icon.orange { background: #fff7ed; color: var(--warning); }
         .stat-card .stat-icon.purple { background: #f5f3ff; color: #7c5cfc; }
         .stat-card .stat-info { flex: 1; min-width: 0; }
-        .stat-card .stat-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-        .stat-card .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: -1px;
-            font-family: 'Inter', -apple-system, 'DIN', monospace;
-        }
-        .stat-card .stat-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-        .stat-card .stat-trend {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        .stat-card .stat-trend.up   { color: var(--success); }
-        .stat-card .stat-trend.down { color: var(--danger); }
+        .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
+        .stat-card .stat-value { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -1px; font-family: 'Inter', -apple-system, 'DIN', monospace; }
+        .stat-card .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-        /* ========== 筛选区卡片 ========== */
         .filter-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 18px 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            background: var(--card-bg); border-radius: var(--radius); padding: 18px 24px;
+            margin-bottom: 20px; box-shadow: var(--shadow);
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
         }
-        .filter-card .filter-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-            margin-right: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .filter-card .filter-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .filter-card select, .filter-card input {
+            height: 38px; padding: 0 12px; background: #fff; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text);
+            outline: none; transition: all 0.2s; min-width: 130px;
         }
-        .filter-card select,
-        .filter-card input {
-            height: 38px;
-            padding: 0 12px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-family: inherit;
-            color: var(--text);
-            outline: none;
-            transition: all 0.2s;
-            min-width: 130px;
-        }
-        .filter-card select:hover,
-        .filter-card input:hover {
-            border-color: #c4c9d4;
-        }
-        .filter-card select:focus,
-        .filter-card input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
-        }
-        .filter-card select option {
-            color: var(--text);
-        }
+        .filter-card select:hover, .filter-card input:hover { border-color: #c4c9d4; }
+        .filter-card select:focus, .filter-card input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,110,247,0.1); }
+        .filter-card select option { color: var(--text); }
+
         .btn {
-            height: 38px;
-            padding: 0 20px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: none;
-            letter-spacing: 0.2px;
+            height: 38px; padding: 0 20px; border-radius: var(--radius-sm); font-size: 13px;
+            font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px; border: none; letter-spacing: 0.2px;
         }
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: #3d5ce5;
-            box-shadow: 0 2px 8px rgba(79,110,247,0.3);
-        }
-        .btn-outline {
-            background: #fff;
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-        }
-        .btn-outline:hover {
-            background: var(--bg);
-            border-color: #c4c9d4;
-        }
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #16a34a;
-            box-shadow: 0 2px 8px rgba(34,197,94,0.3);
-        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: #3d5ce5; box-shadow: 0 2px 8px rgba(79,110,247,0.3); }
+        .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--bg); border-color: #c4c9d4; }
+        .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; }
         .filter-spacer { flex: 1; }
-        .result-tag {
-            font-size: 13px;
-            color: var(--text-secondary);
-            background: var(--bg);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 500;
+
+        /* ========== 校区卡片折叠区 ========== */
+        .campus-cards { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+
+        .campus-card {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow); overflow: hidden; border: 1px solid transparent;
+            transition: all 0.2s;
         }
-        .result-tag strong {
-            color: var(--primary);
+        .campus-card:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .campus-card.expanded { border-color: var(--primary); box-shadow: 0 4px 12px rgba(79,110,247,0.08); }
+
+        .campus-card-header {
+            display: flex; align-items: center; padding: 16px 24px;
+            cursor: pointer; user-select: none; transition: background 0.15s;
+        }
+        .campus-card-header:hover { background: #fafbfc; }
+
+        .campus-card-header .expand-icon {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--bg); display: flex; align-items: center; justify-content: center;
+            margin-right: 14px; font-size: 14px; color: var(--text-secondary);
+            transition: transform 0.25s; flex-shrink: 0;
+        }
+        .campus-card.expanded .expand-icon { transform: rotate(90deg); background: var(--primary-light); color: var(--primary); }
+
+        .campus-card-header .campus-name {
+            font-size: 16px; font-weight: 700; color: var(--text);
+            min-width: 140px; flex-shrink: 0;
         }
 
-        /* ========== 表格卡片 ========== */
-        .table-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
+        .campus-stats { display: flex; gap: 24px; flex: 1; justify-content: flex-end; align-items: center; }
+        .campus-stat-item { text-align: center; }
+        .campus-stat-item .label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+        .campus-stat-item .value { font-size: 20px; font-weight: 800; color: var(--text); font-family: 'Inter','DIN',monospace; }
+        .campus-stat-item .value.blue   { color: var(--primary); }
+        .campus-stat-item .value.green  { color: var(--success); }
+        .campus-stat-item .value.orange { color: var(--warning); }
+        .campus-stat-item .value.purple { color: #7c5cfc; }
+        .campus-stat-item .value.teal   { color: #0d9488; }
+
+        .campus-card-body { display: none; border-top: 1px solid var(--border-light); }
+        .campus-card.expanded .campus-card-body { display: block; }
+
+        .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .detail-table thead th {
+            padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700;
+            color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;
+            background: #fafbfc; border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        .detail-table thead th:first-child { padding-left: 24px; }
+        .detail-table tbody td {
+            padding: 10px 14px; font-size: 13px; color: var(--text);
+            border-bottom: 1px solid var(--border-light); white-space: nowrap;
+        }
+        .detail-table tbody td:first-child { padding-left: 24px; }
+        .detail-table tbody tr:hover { background: #f8fafc; }
+        .detail-table tbody tr:last-child td { border-bottom: none; }
+        .row-num { color: var(--text-muted); font-size: 12px; font-weight: 500; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #ecfdf5; color: #15803d; }
+        .badge-default { background: #f1f5f9; color: #64748b; }
+        .amount { font-weight: 700; color: var(--text); font-family: 'Inter','DIN',monospace; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+
+        .expand-all-bar {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+        }
+        .expand-all-bar .result-tag {
+            font-size: 13px; color: var(--text-secondary); background: var(--card-bg);
+            padding: 4px 14px; border-radius: 20px; font-weight: 500;
             box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        .table-card-header {
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-light);
-        }
-        .table-card-header h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-        }
-        .table-card-header .table-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .data-table thead th {
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: #fafbfc;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-        .data-table thead th:first-child { padding-left: 24px; }
-        .data-table thead th:last-child  { padding-right: 24px; }
-        .data-table tbody td {
-            padding: 13px 16px;
-            font-size: 13px;
-            color: var(--text);
-            border-bottom: 1px solid var(--border-light);
-            white-space: nowrap;
-        }
-        .data-table tbody td:first-child { padding-left: 24px; }
-        .data-table tbody td:last-child  { padding-right: 24px; }
-        .data-table tbody tr {
-            transition: background 0.15s;
-        }
-        .data-table tbody tr:hover {
-            background: #f8fafc;
-        }
-        .data-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-        .row-num {
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-        .badge-success {
-            background: #ecfdf5;
-            color: #15803d;
-        }
-        .badge-default {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        .amount {
-            font-weight: 700;
-            color: var(--text);
-            font-family: 'Inter', 'DIN', monospace;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-        }
-        .empty-state .empty-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
-            opacity: 0.6;
-        }
-        .empty-state p {
-            color: var(--text-muted);
-            font-size: 14px;
         }
 
-        /* ========== 分页 ========== */
-        .pagination-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 24px;
-            border-top: 1px solid var(--border-light);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .page-info {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        .page-info strong {
-            color: var(--text);
-        }
-        .page-btns {
-            display: flex;
-            gap: 4px;
-        }
-        .page-btn {
-            min-width: 34px;
-            height: 34px;
-            padding: 0 6px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: #fff;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-family: inherit;
-        }
-        .page-btn:hover:not(.disabled):not(.active) {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-        .page-btn.active {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-            font-weight: 700;
-        }
-        .page-btn.disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-        .page-ellipsis {
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        .page-size-select {
-            height: 34px;
-            padding: 0 6px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            font-family: inherit;
-            color: var(--text);
-            background: #fff;
-            cursor: pointer;
-            outline: none;
-        }
-        .page-jump {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        .page-jump input {
-            width: 44px;
-            height: 34px;
-            text-align: center;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            font-family: 'Inter', 'DIN', monospace;
-            color: var(--text);
-            outline: none;
-        }
-        .page-jump input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
-        }
-
-        /* ========== 加载态 ========== */
-        .loading-shimmer {
-            animation: shimmer 1.5s infinite;
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            border-radius: 4px;
-        }
-        @keyframes shimmer {
-            0%   { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        @media (max-width: 900px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 640px) {
-            .main { padding: 16px; }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card select, .filter-card input { min-width: auto; }
-            .pagination-bar { flex-direction: column; align-items: flex-start; }
+        @media (max-width: 800px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .campus-card-header { flex-wrap: wrap; gap: 8px; }
+            .campus-stats { gap: 16px; justify-content: flex-start; flex-wrap: wrap; }
+            .campus-stat-item .value { font-size: 18px; }
             .topbar { padding: 0 16px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== 顶部导航 ========== -->
 <nav class="topbar">
-    <div class="logo">
-        <div class="icon">✦</div>
-        星火数据
-    </div>
+    <div class="logo"><div class="icon">✦</div>星火数据</div>
     <div class="topbar-links">
         <a href="/data/index">数据大屏</a>
         <a href="/data/list">深色明细</a>
@@ -528,27 +204,21 @@
     </div>
 </nav>
 
-<!-- ========== 主体 ========== -->
 <div class="main">
-    <!-- 页面标题 -->
     <div class="page-header">
         <div>
             <h1>咨询数据明细</h1>
             <div class="breadcrumb">首页 / <span>数据明细</span></div>
         </div>
-        <button class="btn btn-success" onclick="exportData()">
-            📥 导出数据
-        </button>
     </div>
 
-    <!-- 统计卡片 -->
+    <!-- 汇总卡片 -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon blue">📋</div>
             <div class="stat-info">
                 <div class="stat-label">总咨询记录</div>
                 <div class="stat-value" id="cardTotal">--</div>
-                <div class="stat-sub">全部校区汇总</div>
             </div>
         </div>
         <div class="stat-card">
@@ -556,7 +226,6 @@
             <div class="stat-info">
                 <div class="stat-label">总金额</div>
                 <div class="stat-value" id="cardAmount">--</div>
-                <div class="stat-sub">累计签单金额</div>
             </div>
         </div>
         <div class="stat-card">
@@ -579,92 +248,31 @@
 
     <!-- 筛选区 -->
     <div class="filter-card">
-        <div class="filter-title">🔍 筛选条件</div>
-        <select id="filterCampus">
-            <option value="">全部校区</option>
-        </select>
-        <select id="filterMonth">
-            <option value="">全部月份</option>
-        </select>
-        <select id="filterGrade">
-            <option value="">全部年级</option>
-        </select>
+        <div class="filter-title">🔍 筛选</div>
+        <select id="filterCampus"><option value="">全部校区</option></select>
+        <select id="filterMonth"><option value="">全部月份</option></select>
+        <select id="filterGrade"><option value="">全部年级</option></select>
         <input type="text" id="filterKeyword" placeholder="关键词搜索..." />
-        <button class="btn btn-primary" onclick="doSearch()">
-            🔍 查询
-        </button>
-        <button class="btn btn-outline" onclick="doReset()">
-            ↻ 重置
-        </button>
-        <span class="filter-spacer"></span>
-        <span class="result-tag">
-            共 <strong id="resultCount">0</strong> 条记录
-        </span>
+        <button class="btn btn-primary" onclick="doSearch()">🔍 查询</button>
+        <button class="btn btn-outline" onclick="doReset()">↻ 重置</button>
     </div>
 
-    <!-- 数据表格 -->
-    <div class="table-card">
-        <div class="table-card-header">
-            <h3>📋 数据列表</h3>
-            <div class="table-actions">
-                <button class="btn btn-outline" onclick="doReset()" style="height:32px;padding:0 12px;font-size:12px;">🔄 刷新</button>
-            </div>
-        </div>
-        <div class="table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width:60px;">#</th>
-                        <th>校区</th>
-                        <th>月份</th>
-                        <th>年级</th>
-                        <th>99元咨询课</th>
-                        <th>是否上门</th>
-                        <th>是否签单</th>
-                        <th>校区跟进结果</th>
-                        <th style="text-align:right;">金额 (元)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 分页 -->
-        <div class="pagination-bar">
-            <div class="page-info">
-                共 <strong id="pageTotal">0</strong> 条 &nbsp;·&nbsp;
-                第 <strong id="pageCurrent">1</strong> / <strong id="pageMax">1</strong> 页
-            </div>
-            <div class="page-btns" id="pageBtns"></div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:13px;color:var(--text-secondary);">每页</span>
-                <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize()">
-                    <option value="10">10 条</option>
-                    <option value="20" selected>20 条</option>
-                    <option value="50">50 条</option>
-                    <option value="100">100 条</option>
-                </select>
-                <div class="page-jump">
-                    跳至
-                    <input type="text" id="jumpInput" onkeydown="if(event.key==='Enter')jumpPage()" />
-                    页
-                </div>
-            </div>
-        </div>
+    <!-- 全部展开/收起 + 结果 -->
+    <div class="expand-all-bar">
+        <button class="btn btn-outline btn-sm" onclick="toggleAll()">
+            <span id="expandAllIcon">⊞</span> <span id="expandAllText">全部展开</span>
+        </button>
+        <span class="result-tag" id="resultSummary">共 0 个校区</span>
     </div>
+
+    <!-- 校区卡片列表 -->
+    <div class="campus-cards" id="campusCards"></div>
 </div>
 
 <script>
-// ========== 状态 ==========
-const state = {
-    campuses: [], months: [], grades: [],
-    total: 0, page: 1, pageSize: 20,
-    filterCampus: '', filterMonth: '', filterGrade: '', filterKeyword: ''
-};
+let allData = { campuses: [], summary: {} };
+let allExpanded = false;
 
-// ========== 初始化 ==========
 function init() {
     loadFilters();
     loadData();
@@ -672,17 +280,14 @@ function init() {
 init();
 
 function loadFilters() {
-    fetch('/data/list2/api?page=1&pageSize=1')
+    fetch('/data/list2/api?campus=')
         .then(r => r.json())
         .then(res => {
             if (res.code === 0 && res.data.filters) {
                 const f = res.data.filters;
-                state.campuses = f.campuses || [];
-                state.months = f.months || [];
-                state.grades = f.grades || [];
-                populateSelect('filterCampus', state.campuses, '全部校区');
-                populateSelect('filterMonth', state.months, '全部月份');
-                populateSelect('filterGrade', state.grades, '全部年级');
+                populateSelect('filterCampus', f.campuses || [], '全部校区');
+                populateSelect('filterMonth', f.months || [], '全部月份');
+                populateSelect('filterGrade', f.grades || [], '全部年级');
             }
         });
 }
@@ -693,80 +298,145 @@ function populateSelect(id, items, defaultLabel) {
     sel.innerHTML = '<option value="">' + defaultLabel + '</option>';
     items.forEach(item => {
         const opt = document.createElement('option');
-        opt.value = item;
-        opt.textContent = item;
+        opt.value = item; opt.textContent = item;
         sel.appendChild(opt);
     });
     sel.value = val;
 }
 
 function loadData() {
-    const params = new URLSearchParams({
-        page: state.page,
-        pageSize: state.pageSize
-    });
-    if (state.filterCampus) params.set('campus', state.filterCampus);
-    if (state.filterMonth)  params.set('month', state.filterMonth);
-    if (state.filterGrade)  params.set('grade', state.filterGrade);
-    if (state.filterKeyword) params.set('keyword', state.filterKeyword);
+    const params = new URLSearchParams();
+    const c = document.getElementById('filterCampus').value;
+    const m = document.getElementById('filterMonth').value;
+    const g = document.getElementById('filterGrade').value;
+    const kw = document.getElementById('filterKeyword').value.trim();
+    if (c) params.set('campus', c);
+    if (m) params.set('month', m);
+    if (g) params.set('grade', g);
+    if (kw) params.set('keyword', kw);
 
     fetch('/data/list2/api?' + params.toString())
         .then(r => r.json())
         .then(res => {
             if (res.code === 0) {
-                renderSummary(res.data.summary);
-                renderTable(res.data.rows);
-                state.total = res.data.total || 0;
-                renderPagination();
-            } else {
-                showTableError(res.message || '加载失败');
+                allData = { campuses: res.data.campuses || [], summary: res.data.summary || {} };
+                renderSummary(allData.summary);
+                renderCampusCards(allData.campuses);
             }
         })
-        .catch(e => showTableError('网络请求失败: ' + e.message));
+        .catch(e => document.getElementById('campusCards').innerHTML =
+            '<div class="empty-state">⚠️ 加载失败: ' + e.message + '</div>');
 }
 
 function renderSummary(s) {
-    const fmt = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-    const fmtMoney = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
+    const fmt = n => (n || 0).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+    const fmtM = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     document.getElementById('cardTotal').textContent = fmt(s.total_records || 0);
-    document.getElementById('cardAmount').textContent = '¥ ' + fmtMoney(s.total_amount || 0);
+    document.getElementById('cardAmount').textContent = '¥ ' + fmtM(s.total_amount || 0);
     document.getElementById('cardVisit').textContent = (s.overall_visit_rate || 0).toFixed(1) + '%';
     document.getElementById('cardVisitSub').textContent = '上门 ' + fmt(s.total_visit || 0) + ' 人';
     document.getElementById('cardSign').textContent = (s.overall_sign_rate || 0).toFixed(1) + '%';
     document.getElementById('cardSignSub').textContent = '签单 ' + fmt(s.total_sign || 0) + ' 人';
 }
 
-function renderTable(rows) {
-    const tbody = document.getElementById('tableBody');
-    if (!rows || rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div><p>暂无数据，请在 excel 目录下放入数据文件</p></div></td></tr>';
+function renderCampusCards(campuses) {
+    const container = document.getElementById('campusCards');
+    document.getElementById('resultSummary').innerHTML =
+        '共 <strong>' + campuses.length + '</strong> 个校区，记录 <strong>' +
+        (campuses.reduce((s, c) => s + c.total_count, 0)).toLocaleString() + '</strong> 条';
+
+    if (!campuses.length) {
+        container.innerHTML = '<div class="empty-state" style="background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">📭 暂无数据</div>';
         return;
     }
-    const startIdx = (state.page - 1) * state.pageSize;
-    tbody.innerHTML = rows.map((r, i) => {
-        const idx = startIdx + i + 1;
-        return `<tr>
-            <td class="row-num">${idx}</td>
-            <td><strong>${esc(r.campus)}</strong></td>
-            <td>${esc(r.month)}</td>
-            <td>${esc(r.grade)}</td>
-            <td>${renderBadge(r.consultation_99)}</td>
-            <td>${renderBadge(r.visit_status)}</td>
-            <td>${renderBadge(r.sign_status)}</td>
-            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up) || ''}">${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
-            <td style="text-align:right;"><span class="amount">¥ ${(r.amount || 0).toFixed(2)}</span></td>
-        </tr>`;
-    }).join('');
+
+    container.innerHTML = campuses.map((cs, idx) => `
+        <div class="campus-card" id="card-${idx}">
+            <div class="campus-card-header" onclick="toggleCard(${idx})">
+                <div class="expand-icon" id="icon-${idx}">▶</div>
+                <div class="campus-name">🏫 ${esc(cs.campus)}</div>
+                <div class="campus-stats">
+                    <div class="campus-stat-item">
+                        <div class="label">对接资源总量</div>
+                        <div class="value blue">${cs.total_count.toLocaleString()}</div>
+                    </div>
+                    <div class="campus-stat-item">
+                        <div class="label">上门量</div>
+                        <div class="value green">${cs.visit_count.toLocaleString()}</div>
+                    </div>
+                    <div class="campus-stat-item">
+                        <div class="label">签单量</div>
+                        <div class="value orange">${cs.sign_count.toLocaleString()}</div>
+                    </div>
+                    <div class="campus-stat-item">
+                        <div class="label">总金额</div>
+                        <div class="value teal">¥ ${fmtBrief(cs.total_amount)}</div>
+                    </div>
+                    <div class="campus-stat-item">
+                        <div class="label">签单转化率</div>
+                        <div class="value purple">${fmtPct(cs.total_count, cs.amount_count)}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="campus-card-body" id="body-${idx}">
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>月份</th>
+                            <th>年级</th>
+                            <th>99元咨询课</th>
+                            <th>是否已上门</th>
+                            <th>是否签单</th>
+                            <th>校区跟进结果</th>
+                            <th style="text-align:right;">金额(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${cs.rows.map((r, i) => `
+                            <tr>
+                                <td class="row-num">${i + 1}</td>
+                                <td>${esc(r.month)}</td>
+                                <td>${esc(r.grade)}</td>
+                                <td>${renderBadge(r.consultation_99)}</td>
+                                <td>${renderBadge(r.visit_status)}</td>
+                                <td>${renderBadge(r.sign_status)}</td>
+                                <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(r.follow_up)||''}">${esc(r.follow_up) || '<span style="color:var(--text-muted);">--</span>'}</td>
+                                <td style="text-align:right;"><span class="amount">¥ ${(r.amount||0).toFixed(2)}</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleCard(idx) {
+    document.getElementById('card-' + idx).classList.toggle('expanded');
+    allExpanded = false;
+    updateExpandAllBtn();
+}
+
+function toggleAll() {
+    allExpanded = !allExpanded;
+    document.querySelectorAll('.campus-card').forEach(c => {
+        if (allExpanded) c.classList.add('expanded');
+        else c.classList.remove('expanded');
+    });
+    updateExpandAllBtn();
+}
+
+function updateExpandAllBtn() {
+    document.getElementById('expandAllIcon').textContent = allExpanded ? '⊟' : '⊞';
+    document.getElementById('expandAllText').textContent = allExpanded ? '全部收起' : '全部展开';
 }
 
 function renderBadge(val) {
     if (!val) return '<span class="badge badge-default">--</span>';
     const v = val.trim();
     const yes = v === '是' || v.toLowerCase() === 'yes' || v === 'y' || v === '1' || v === '✓' || v === 'true';
-    return yes
-        ? '<span class="badge badge-success">是</span>'
-        : '<span class="badge badge-default">' + esc(v) + '</span>';
+    return yes ? '<span class="badge badge-success">是</span>' : '<span class="badge badge-default">' + esc(v) + '</span>';
 }
 
 function esc(s) {
@@ -774,89 +444,25 @@ function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function showTableError(msg) {
-    document.getElementById('tableBody').innerHTML =
-        '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⚠️</div><p>' + esc(msg) + '</p></div></td></tr>';
+function fmtBrief(n) {
+	if (!n && n !== 0) return '--';
+	if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+	return n.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
 }
 
-function renderPagination() {
-    const totalPages = Math.ceil(state.total / state.pageSize) || 1;
-    document.getElementById('pageTotal').textContent = state.total.toLocaleString();
-    document.getElementById('pageCurrent').textContent = state.page;
-    document.getElementById('pageMax').textContent = totalPages;
-    document.getElementById('resultCount').textContent = state.total.toLocaleString();
-
-    const container = document.getElementById('pageBtns');
-    let html = '';
-
-    html += `<button class="page-btn ${state.page <= 1 ? 'disabled' : ''}" onclick="goPage(${state.page - 1})" ${state.page <= 1 ? 'disabled' : ''}>◀</button>`;
-
-    const show = 7;
-    let start = Math.max(1, state.page - Math.floor(show / 2));
-    let end = Math.min(totalPages, start + show - 1);
-    if (end - start < show - 1) start = Math.max(1, end - show + 1);
-
-    if (start > 1) {
-        html += `<button class="page-btn" onclick="goPage(1)">1</button>`;
-        if (start > 2) html += '<span class="page-ellipsis">…</span>';
-    }
-    for (let p = start; p <= end; p++) {
-        html += `<button class="page-btn ${p === state.page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
-    }
-    if (end < totalPages) {
-        if (end < totalPages - 1) html += '<span class="page-ellipsis">…</span>';
-        html += `<button class="page-btn" onclick="goPage(${totalPages})">${totalPages}</button>`;
-    }
-
-    html += `<button class="page-btn ${state.page >= totalPages ? 'disabled' : ''}" onclick="goPage(${state.page + 1})" ${state.page >= totalPages ? 'disabled' : ''}>▶</button>`;
-    container.innerHTML = html;
-    document.getElementById('jumpInput').value = '';
+function fmtPct(total, part) {
+	if (!total) return '--';
+	return (part / total * 100).toFixed(1) + '%';
 }
 
-function goPage(p) {
-    const totalPages = Math.ceil(state.total / state.pageSize) || 1;
-    if (p < 1 || p > totalPages) return;
-    state.page = p;
-    loadData();
-    document.querySelector('.table-wrapper').scrollTop = 0;
-}
-
-function jumpPage() {
-    const p = parseInt(document.getElementById('jumpInput').value);
-    if (isNaN(p)) return;
-    goPage(p);
-}
-
-function changePageSize() {
-    state.pageSize = parseInt(document.getElementById('pageSizeSelect').value);
-    state.page = 1;
-    loadData();
-}
-
-function doSearch() {
-    state.filterCampus = document.getElementById('filterCampus').value;
-    state.filterMonth = document.getElementById('filterMonth').value;
-    state.filterGrade = document.getElementById('filterGrade').value;
-    state.filterKeyword = document.getElementById('filterKeyword').value.trim();
-    state.page = 1;
-    loadData();
-}
-
+function doSearch() { loadData(); }
 function doReset() {
     document.getElementById('filterCampus').value = '';
     document.getElementById('filterMonth').value = '';
     document.getElementById('filterGrade').value = '';
     document.getElementById('filterKeyword').value = '';
-    state.filterCampus = '';
-    state.filterMonth = '';
-    state.filterGrade = '';
-    state.filterKeyword = '';
-    state.page = 1;
+    allExpanded = false;
     loadData();
-}
-
-function exportData() {
-    alert('导出功能开发中，当前版本请直接在 excel 目录查看原始文件。\n\n📂 Excel目录: {{.excelDir}}');
 }
 </script>
 </body>

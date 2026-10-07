@@ -136,9 +136,46 @@ func listPageHandler(c *gin.Context, exeDir string) {
 	})
 }
 
-// list2ApiHandler 返回列表数据JSON（与listApiHandler一致，支持筛选+分页）
+// list2ApiHandler 返回按校区聚合的卡片数据
 func list2ApiHandler(c *gin.Context, exeDir string) {
-	listApiHandler(c, exeDir)
+	rows, fileCount, err := service.ReadExcelDir(exeDir)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    -1,
+			"message": err.Error(),
+			"data":    nil,
+		})
+		return
+	}
+
+	stats := service.CalculateStats(rows)
+	stats.Summary.FileCount = fileCount
+	stats.RawRows = nil
+
+	// 按筛选条件过滤后，按校区分组
+	filteredRows := service.FilterRows(rows,
+		c.Query("campus"),
+		c.Query("month"),
+		c.Query("grade"),
+		c.Query("keyword"),
+	)
+
+	campusSummaries := service.GroupByCampus(filteredRows)
+	campuses, months, grades := service.ExtractFilterOptions(rows)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"summary":  stats.Summary,
+			"campuses": campusSummaries,
+			"filters": gin.H{
+				"campuses": campuses,
+				"months":   months,
+				"grades":   grades,
+			},
+		},
+	})
 }
 
 // list2PageHandler 返回白色卡片风格的数据明细列表页面
