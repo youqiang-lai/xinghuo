@@ -218,38 +218,41 @@
 
         /* ========== 列展示设置按钮 ========== */
         .col-toggle-btn {
-            position: relative;
-            width: 32px; height: 32px; border-radius: 50%;
+            position: fixed; top: 68px; right: 24px; z-index: 99;
+            width: 38px; height: 38px; border-radius: 50%;
             background: #fff; border: 1px solid var(--border);
             color: var(--text-secondary); cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s; box-shadow: var(--shadow);
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
         }
-        .col-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .col-toggle-btn svg { width: 16px; height: 16px; }
+        .col-toggle-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--shadow-md); }
+        .col-toggle-btn svg { width: 18px; height: 18px; }
         .col-toggle-panel {
-            position: absolute; top: 100%; right: 0; z-index: 50;
-            display: none; margin-top: 6px;
+            position: fixed; top: 112px; right: 24px; z-index: 99;
+            display: none;
             background: #fff; border: 1px solid var(--border);
-            border-radius: var(--radius-sm); padding: 14px;
-            min-width: 180px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-radius: var(--radius-sm); padding: 16px;
+            min-width: 190px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.12);
         }
         .col-toggle-panel.show { display: block; }
         .col-toggle-panel .panel-title {
-            font-size: 12px; color: var(--text-secondary); font-weight: 600;
-            letter-spacing: 0.5px; margin-bottom: 10px;
-            padding-bottom: 6px; border-bottom: 1px solid var(--border-light);
+            font-size: 13px; color: var(--text); font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 8px; border-bottom: 1px solid var(--border-light);
+        }
+        .col-toggle-panel .section-label {
+            font-size: 11px; color: var(--text-muted); font-weight: 600;
+            margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .col-toggle-panel label {
             display: flex; align-items: center; gap: 8px;
-            padding: 5px 0; cursor: pointer; font-size: 12px;
+            padding: 5px 0; cursor: pointer; font-size: 13px;
             color: var(--text); transition: color 0.2s;
         }
         .col-toggle-panel label:hover { color: var(--primary); }
         .col-toggle-panel label input[type=checkbox] {
-            accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer;
+            accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer;
         }
 
         @media (max-width: 800px) {
@@ -280,6 +283,18 @@
         <a href="/data/list2" class="active">数据明细</a>
     </div>
 </nav>
+
+<!-- 列展示设置（固定右上角） -->
+<button class="col-toggle-btn" onclick="toggleColPanel()" title="列展示设置">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+</button>
+<div class="col-toggle-panel" id="list2ColPanel">
+    <div class="panel-title">列展示设置</div>
+    <div class="section-label">校区统计项</div>
+    <div id="list2StatCheckboxes"></div>
+    <div class="section-label">明细表格列</div>
+    <div id="list2ColCheckboxes"></div>
+</div>
 
 <div class="main">
     <div class="page-header">
@@ -376,15 +391,6 @@
             <span id="expandAllText">全部展开</span>
         </button>
         <span class="result-tag" id="resultSummary">共 0 个校区</span>
-        <div style="position:relative;margin-left:auto;">
-            <button class="col-toggle-btn" onclick="event.stopPropagation(); toggleColPanel()" title="列展示设置">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-            </button>
-            <div class="col-toggle-panel" id="list2ColPanel">
-                <div class="panel-title">📋 明细列展示设置</div>
-                <div id="list2ColCheckboxes"></div>
-            </div>
-        </div>
     </div>
 
     <!-- 校区卡片列表 -->
@@ -394,6 +400,86 @@
 <script>
 let allData = { campuses: [], summary: {} };
 let allExpanded = false;
+
+// ========== 列展示控制（必须在 init 前定义） ==========
+(function() {
+    const KEY_COL = 'list2_detail_col_visible';
+    const KEY_STAT = 'list2_stat_visible';
+
+    const STAT_DEFS = [
+        { key: 'total', label: '对接资源总量' },
+        { key: 'visit', label: '上门量' },
+        { key: 'sign', label: '签单量' },
+        { key: 'amount', label: '总金额' },
+        { key: 'signRate', label: '签单转化率' }
+    ];
+
+    const COL_DEFS = [
+        { key: 'index', label: '序号' },
+        { key: 'month', label: '月份' },
+        { key: 'grade', label: '年级' },
+        { key: 'consultation99', label: '99元咨询课' },
+        { key: 'visit', label: '是否已上门' },
+        { key: 'sign', label: '是否签单' },
+        { key: 'followUp', label: '校区跟进结果' },
+        { key: 'amount', label: '金额(元)' }
+    ];
+
+    function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) {} return null; }
+    function save(key, map) { localStorage.setItem(key, JSON.stringify(map)); }
+    function defaults(defs) { const m = {}; defs.forEach(c => m[c.key] = true); return m; }
+
+    window.initList2ColToggle = function() {
+        const statVisible = load(KEY_STAT) || defaults(STAT_DEFS);
+        const colVisible = load(KEY_COL) || defaults(COL_DEFS);
+
+        document.getElementById('list2StatCheckboxes').innerHTML = STAT_DEFS.map(c =>
+            '<label><input type="checkbox" data-stat="' + c.key + '" ' + (statVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
+        ).join('');
+        document.getElementById('list2ColCheckboxes').innerHTML = COL_DEFS.map(c =>
+            '<label><input type="checkbox" data-col="' + c.key + '" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
+        ).join('');
+        applyList2ColVisible();
+    };
+
+    window.applyList2ColVisible = function() {
+        // 统计项可见性
+        const statMap = {};
+        document.querySelectorAll('#list2StatCheckboxes input[type=checkbox]').forEach(cb => { statMap[cb.dataset.stat] = cb.checked; });
+        save(KEY_STAT, statMap);
+        document.querySelectorAll('.campus-stat-item').forEach(item => {
+            const val = item.querySelector('.value');
+            if (!val) return;
+            let key = '';
+            if (val.classList.contains('blue')) key = 'total';
+            else if (val.classList.contains('green')) key = 'visit';
+            else if (val.classList.contains('orange')) key = 'sign';
+            else if (val.classList.contains('teal')) key = 'amount';
+            else if (val.classList.contains('purple')) key = 'signRate';
+            item.style.display = statMap[key] ? '' : 'none';
+        });
+
+        // 明细列可见性
+        const colMap = {};
+        document.querySelectorAll('#list2ColCheckboxes input[type=checkbox]').forEach(cb => { colMap[cb.dataset.col] = cb.checked; });
+        save(KEY_COL, colMap);
+        document.querySelectorAll('.detail-table thead th[data-col]').forEach(th => { th.style.display = colMap[th.dataset.col] ? '' : 'none'; });
+        document.querySelectorAll('.detail-table tbody td[data-col]').forEach(td => { td.style.display = colMap[td.dataset.col] ? '' : 'none'; });
+    };
+
+    window.toggleColPanel = function() {
+        document.getElementById('list2ColPanel').classList.toggle('show');
+    };
+
+    // 点击面板外部关闭
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('list2ColPanel');
+        const btn = document.querySelector('.col-toggle-btn');
+        if (panel && btn && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+            panel.classList.remove('show');
+        }
+    });
+})();
 
 function init() {
     initList2ColToggle();
@@ -641,45 +727,6 @@ function esc(s) {
     if (!s && s !== 0) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-// ========== 明细列展示控制 ==========
-(function() {
-    const KEY = 'list2_detail_col_visible';
-    const DEFS = [
-        { key: 'index', label: '序号' },
-        { key: 'month', label: '月份' },
-        { key: 'grade', label: '年级' },
-        { key: 'consultation99', label: '99元咨询课' },
-        { key: 'visit', label: '是否已上门' },
-        { key: 'sign', label: '是否签单' },
-        { key: 'followUp', label: '校区跟进结果' },
-        { key: 'amount', label: '金额(元)' }
-    ];
-
-    function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch(e) {} return null; }
-    function save(map) { localStorage.setItem(KEY, JSON.stringify(map)); }
-    function defaults() { const m = {}; DEFS.forEach(c => m[c.key] = true); return m; }
-
-    window.initList2ColToggle = function() {
-        const visible = load() || defaults();
-        document.getElementById('list2ColCheckboxes').innerHTML = DEFS.map(c =>
-            '<label><input type="checkbox" data-col="' + c.key + '" ' + (visible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
-        ).join('');
-        applyList2ColVisible();
-    };
-
-    window.applyList2ColVisible = function() {
-        const map = {};
-        document.querySelectorAll('#list2ColCheckboxes input[type=checkbox]').forEach(cb => { map[cb.dataset.col] = cb.checked; });
-        save(map);
-        document.querySelectorAll('.detail-table thead th[data-col]').forEach(th => { th.style.display = map[th.dataset.col] ? '' : 'none'; });
-        document.querySelectorAll('.detail-table tbody td[data-col]').forEach(td => { td.style.display = map[td.dataset.col] ? '' : 'none'; });
-    };
-
-    window.toggleColPanel = function() {
-        document.getElementById('list2ColPanel').classList.toggle('show');
-    };
-})();
 
 function doSearch() { loadData(); }
 let searchTimer = null;
