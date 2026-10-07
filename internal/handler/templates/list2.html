@@ -35,6 +35,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ========== 顶部导航 ========== */
         .topbar {
             background: #fff;
             border-bottom: 1px solid var(--border);
@@ -45,13 +46,13 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
         .topbar .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-        .topbar .logo .icon {
+        .topbar .logo .logo-svg {
             width: 32px; height: 32px;
             background: linear-gradient(135deg, var(--primary), #7c5cfc);
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 16px;
         }
+        .topbar .logo .logo-svg svg { width: 18px; height: 18px; }
         .topbar .topbar-links { display: flex; align-items: center; gap: 8px; }
         .topbar .topbar-links a {
             padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
@@ -60,6 +61,7 @@
         .topbar .topbar-links a:hover { background: var(--primary-light); color: var(--primary); }
         .topbar .topbar-links a.active { background: var(--primary); color: #fff; }
 
+        /* ========== 主容器 ========== */
         .main { max-width: 1320px; margin: 0 auto; padding: 24px 24px 40px; }
 
         .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
@@ -67,6 +69,7 @@
         .page-header .breadcrumb { font-size: 13px; color: var(--text-muted); }
         .page-header .breadcrumb span { color: var(--text-secondary); }
 
+        /* ========== 汇总统计卡片 ========== */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
         .stat-card {
             background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px;
@@ -74,22 +77,29 @@
             transition: all 0.2s; border: 1px solid transparent;
         }
         .stat-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-color: var(--border); transform: translateY(-1px); }
-        .stat-card .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-        .stat-card .stat-icon.blue   { background: #eef1fe; color: var(--primary); }
-        .stat-card .stat-icon.green  { background: #ecfdf5; color: var(--success); }
-        .stat-card .stat-icon.orange { background: #fff7ed; color: var(--warning); }
-        .stat-card .stat-icon.purple { background: #f5f3ff; color: #7c5cfc; }
+        .stat-card .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-card .stat-icon svg { width: 24px; height: 24px; }
+        .stat-card .stat-icon.blue   { background: #eef1fe; }
+        .stat-card .stat-icon.blue svg   { color: var(--primary); }
+        .stat-card .stat-icon.green  { background: #ecfdf5; }
+        .stat-card .stat-icon.green svg  { color: var(--success); }
+        .stat-card .stat-icon.orange { background: #fff7ed; }
+        .stat-card .stat-icon.orange svg { color: var(--warning); }
+        .stat-card .stat-icon.purple { background: #f5f3ff; }
+        .stat-card .stat-icon.purple svg { color: #7c5cfc; }
         .stat-card .stat-info { flex: 1; min-width: 0; }
         .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
         .stat-card .stat-value { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -1px; font-family: 'Inter', -apple-system, 'DIN', monospace; }
         .stat-card .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
+        /* ========== 筛选区 ========== */
         .filter-card {
             background: var(--card-bg); border-radius: var(--radius); padding: 18px 24px;
             margin-bottom: 20px; box-shadow: var(--shadow);
             display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
         }
         .filter-card .filter-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .filter-card .filter-title svg { width: 16px; height: 16px; color: var(--text-secondary); }
         .filter-card select, .filter-card input {
             height: 38px; padding: 0 12px; background: #fff; border: 1px solid var(--border);
             border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text);
@@ -104,6 +114,7 @@
             font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s;
             display: inline-flex; align-items: center; gap: 6px; border: none; letter-spacing: 0.2px;
         }
+        .btn svg { width: 14px; height: 14px; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-primary:hover { background: #3d5ce5; box-shadow: 0 2px 8px rgba(79,110,247,0.3); }
         .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
@@ -117,7 +128,7 @@
         .campus-card {
             background: var(--card-bg); border-radius: var(--radius);
             box-shadow: var(--shadow); overflow: hidden; border: 1px solid transparent;
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
         .campus-card:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .campus-card.expanded { border-color: var(--primary); box-shadow: 0 4px 12px rgba(79,110,247,0.08); }
@@ -128,18 +139,25 @@
         }
         .campus-card-header:hover { background: #fafbfc; }
 
-        .campus-card-header .expand-icon {
+        .campus-card-header .expand-chevron {
             width: 32px; height: 32px; border-radius: 50%;
             background: var(--bg); display: flex; align-items: center; justify-content: center;
-            margin-right: 14px; font-size: 14px; color: var(--text-secondary);
-            transition: transform 0.25s; flex-shrink: 0;
+            margin-right: 14px; transition: all 0.25s; flex-shrink: 0;
         }
-        .campus-card.expanded .expand-icon { transform: rotate(90deg); background: var(--primary-light); color: var(--primary); }
+        .campus-card-header .expand-chevron svg {
+            width: 14px; height: 14px; color: var(--text-secondary);
+            transition: transform 0.25s;
+        }
+        .campus-card.expanded .expand-chevron svg { transform: rotate(90deg); }
+        .campus-card.expanded .expand-chevron { background: var(--primary-light); }
+        .campus-card.expanded .expand-chevron svg { color: var(--primary); }
 
         .campus-card-header .campus-name {
             font-size: 16px; font-weight: 700; color: var(--text);
             min-width: 140px; flex-shrink: 0;
+            display: flex; align-items: center; gap: 8px;
         }
+        .campus-card-header .campus-name svg { width: 18px; height: 18px; color: var(--primary); flex-shrink: 0; }
 
         .campus-stats { display: flex; gap: 24px; flex: 1; justify-content: flex-end; align-items: center; }
         .campus-stat-item { text-align: center; }
@@ -151,8 +169,10 @@
         .campus-stat-item .value.purple { color: #7c5cfc; }
         .campus-stat-item .value.teal   { color: #0d9488; }
 
-        .campus-card-body { display: none; border-top: 1px solid var(--border-light); }
-        .campus-card.expanded .campus-card-body { display: block; }
+        .campus-card-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+        .campus-card-body > div { overflow: hidden; }
+        .campus-card.expanded .campus-card-body { grid-template-rows: 1fr; }
+        .campus-card-body { border-top: 1px solid var(--border-light); }
 
         .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .detail-table thead th {
@@ -166,6 +186,7 @@
             border-bottom: 1px solid var(--border-light); white-space: nowrap;
         }
         .detail-table tbody td:first-child { padding-left: 24px; }
+        .detail-table tbody tr { transition: background 0.15s; }
         .detail-table tbody tr:hover { background: #f8fafc; }
         .detail-table tbody tr:last-child td { border-bottom: none; }
         .row-num { color: var(--text-muted); font-size: 12px; font-weight: 500; }
@@ -196,7 +217,16 @@
 <body>
 
 <nav class="topbar">
-    <div class="logo"><div class="icon">✦</div>星火数据</div>
+    <div class="logo">
+        <div class="logo-svg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+                <line x1="12" y1="22" x2="12" y2="15.5"/>
+                <polyline points="22 8.5 12 15.5 2 8.5"/>
+            </svg>
+        </div>
+        星火数据
+    </div>
     <div class="topbar-links">
         <a href="/data/index">数据大屏</a>
         <a href="/data/list">深色明细</a>
@@ -215,21 +245,38 @@
     <!-- 汇总卡片 -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-icon blue">📋</div>
+            <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    <path d="M9 14l2 2 4-4"/>
+                </svg>
+            </div>
             <div class="stat-info">
                 <div class="stat-label">总咨询记录</div>
                 <div class="stat-value" id="cardTotal">--</div>
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon green">💰</div>
+            <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
             <div class="stat-info">
                 <div class="stat-label">总金额</div>
                 <div class="stat-value" id="cardAmount">--</div>
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon orange">🚪</div>
+            <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+            </div>
             <div class="stat-info">
                 <div class="stat-label">上门转化率</div>
                 <div class="stat-value" id="cardVisit">--</div>
@@ -237,7 +284,12 @@
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon purple">✍️</div>
+            <div class="stat-icon purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/>
+                    <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/>
+                </svg>
+            </div>
             <div class="stat-info">
                 <div class="stat-label">签单转化率</div>
                 <div class="stat-value" id="cardSign">--</div>
@@ -248,19 +300,40 @@
 
     <!-- 筛选区 -->
     <div class="filter-card">
-        <div class="filter-title">🔍 筛选</div>
+        <div class="filter-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            筛选
+        </div>
         <select id="filterCampus"><option value="">全部校区</option></select>
         <select id="filterMonth"><option value="">全部月份</option></select>
         <select id="filterGrade"><option value="">全部年级</option></select>
         <input type="text" id="filterKeyword" placeholder="关键词搜索..." />
-        <button class="btn btn-primary" onclick="doSearch()">🔍 查询</button>
-        <button class="btn btn-outline" onclick="doReset()">↻ 重置</button>
+        <button class="btn btn-primary" onclick="doSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            查询
+        </button>
+        <button class="btn btn-outline" onclick="doReset()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"/>
+                <polyline points="23 20 23 14 17 14"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+            </svg>
+            重置
+        </button>
     </div>
 
     <!-- 全部展开/收起 + 结果 -->
     <div class="expand-all-bar">
         <button class="btn btn-outline btn-sm" onclick="toggleAll()">
-            <span id="expandAllIcon">⊞</span> <span id="expandAllText">全部展开</span>
+            <svg id="expandAllIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;">
+                <polyline points="9 18 15 12 9 6"/>
+            </svg>
+            <span id="expandAllText">全部展开</span>
         </button>
         <span class="result-tag" id="resultSummary">共 0 个校区</span>
     </div>
@@ -322,28 +395,79 @@ function loadData() {
                 allData = { campuses: res.data.campuses || [], summary: res.data.summary || {} };
                 renderSummary(allData.summary);
                 renderCampusCards(allData.campuses);
+                runAnimations();
             }
         })
         .catch(e => document.getElementById('campusCards').innerHTML =
             '<div class="empty-state">⚠️ 加载失败: ' + e.message + '</div>');
 }
 
+// ========== 数字滚动动画 ==========
+function countUp(el, from, to, duration, fmt) {
+    if (to === from) { el.textContent = fmt(to); return; }
+    const start = performance.now();
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // ease-out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = from + (to - from) * eased;
+        el.textContent = fmt(current);
+        if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+function runAnimations() {
+    // 汇总卡片动画
+    const s = allData.summary;
+    const dur = 600;
+    countUp(document.getElementById('cardTotal'), 0, s.total_records || 0, dur,
+        v => Math.round(v).toLocaleString('zh-CN', {maximumFractionDigits:0}));
+    countUp(document.getElementById('cardAmount'), 0, s.total_amount || 0, dur,
+        v => '¥ ' + v.toLocaleString('zh-CN', {minimumFractionDigits:2, maximumFractionDigits:2}));
+    countUp(document.getElementById('cardVisit'), 0, s.overall_visit_rate || 0, dur,
+        v => v.toFixed(1) + '%');
+    countUp(document.getElementById('cardSign'), 0, s.overall_sign_rate || 0, dur,
+        v => v.toFixed(1) + '%');
+
+    document.getElementById('cardVisitSub').textContent = '上门 ' + ((s.total_visit || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' 人';
+    document.getElementById('cardSignSub').textContent = '签单 ' + ((s.total_sign || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' 人';
+
+    // 校区卡片内数字动画 - 通过 data-target 属性驱动
+    document.querySelectorAll('.count-up').forEach(el => {
+        const target = parseFloat(el.dataset.target);
+        const decimals = parseInt(el.dataset.decimals) || 0;
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        countUp(el, 0, target, dur,
+            v => prefix + v.toFixed(decimals).replace(/\.0+$/, '') + suffix);
+    });
+
+    // 非数字的 count-up-pct（百分比）
+    document.querySelectorAll('.count-up-pct').forEach(el => {
+        const target = parseFloat(el.dataset.target);
+        countUp(el, 0, target, dur, v => v.toFixed(1) + '%');
+    });
+}
+
+// ========== 渲染 ==========
 function renderSummary(s) {
-    const fmt = n => (n || 0).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
-    const fmtM = n => (n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById('cardTotal').textContent = fmt(s.total_records || 0);
-    document.getElementById('cardAmount').textContent = '¥ ' + fmtM(s.total_amount || 0);
-    document.getElementById('cardVisit').textContent = (s.overall_visit_rate || 0).toFixed(1) + '%';
-    document.getElementById('cardVisitSub').textContent = '上门 ' + fmt(s.total_visit || 0) + ' 人';
-    document.getElementById('cardSign').textContent = (s.overall_sign_rate || 0).toFixed(1) + '%';
-    document.getElementById('cardSignSub').textContent = '签单 ' + fmt(s.total_sign || 0) + ' 人';
+    // placeholder，实际数字由 runAnimations 填充
+    document.getElementById('cardTotal').textContent = '--';
+    document.getElementById('cardAmount').textContent = '--';
+    document.getElementById('cardVisit').textContent = '--';
+    document.getElementById('cardSign').textContent = '--';
+    document.getElementById('cardVisitSub').textContent = '';
+    document.getElementById('cardSignSub').textContent = '';
 }
 
 function renderCampusCards(campuses) {
     const container = document.getElementById('campusCards');
+    const totalRecords = campuses.reduce((s, c) => s + c.total_count, 0);
     document.getElementById('resultSummary').innerHTML =
         '共 <strong>' + campuses.length + '</strong> 个校区，记录 <strong>' +
-        (campuses.reduce((s, c) => s + c.total_count, 0)).toLocaleString() + '</strong> 条';
+        totalRecords.toLocaleString() + '</strong> 条';
 
     if (!campuses.length) {
         container.innerHTML = '<div class="empty-state" style="background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">📭 暂无数据</div>';
@@ -353,32 +477,49 @@ function renderCampusCards(campuses) {
     container.innerHTML = campuses.map((cs, idx) => `
         <div class="campus-card" id="card-${idx}">
             <div class="campus-card-header" onclick="toggleCard(${idx})">
-                <div class="expand-icon" id="icon-${idx}">▶</div>
-                <div class="campus-name">🏫 ${esc(cs.campus)}</div>
+                <div class="expand-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </div>
+                <div class="campus-name">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18"/>
+                        <path d="M3 10h18"/>
+                        <path d="M5 6l7-3 7 3"/>
+                        <path d="M4 10v11"/>
+                        <path d="M20 10v11"/>
+                        <path d="M8 14v3"/>
+                        <path d="M12 14v3"/>
+                        <path d="M16 14v3"/>
+                    </svg>
+                    ${esc(cs.campus)}
+                </div>
                 <div class="campus-stats">
                     <div class="campus-stat-item">
                         <div class="label">对接资源总量</div>
-                        <div class="value blue">${cs.total_count.toLocaleString()}</div>
+                        <div class="value blue count-up" data-target="${cs.total_count}" data-decimals="0">0</div>
                     </div>
                     <div class="campus-stat-item">
                         <div class="label">上门量</div>
-                        <div class="value green">${cs.visit_count.toLocaleString()}</div>
+                        <div class="value green count-up" data-target="${cs.visit_count}" data-decimals="0">0</div>
                     </div>
                     <div class="campus-stat-item">
                         <div class="label">签单量</div>
-                        <div class="value orange">${cs.sign_count.toLocaleString()}</div>
+                        <div class="value orange count-up" data-target="${cs.sign_count}" data-decimals="0">0</div>
                     </div>
                     <div class="campus-stat-item">
                         <div class="label">总金额</div>
-                        <div class="value teal">¥ ${fmtBrief(cs.total_amount)}</div>
+                        <div class="value teal count-up" data-target="${cs.total_amount}" data-decimals="0" data-prefix="¥ ">¥ 0</div>
                     </div>
                     <div class="campus-stat-item">
                         <div class="label">签单转化率</div>
-                        <div class="value purple">${fmtPct(cs.total_count, cs.amount_count)}</div>
+                        <div class="value purple count-up-pct" data-target="${cs.total_count ? (cs.amount_count / cs.total_count * 100) : 0}">0.0%</div>
                     </div>
                 </div>
             </div>
             <div class="campus-card-body" id="body-${idx}">
+                <div>
                 <table class="detail-table">
                     <thead>
                         <tr>
@@ -407,6 +548,7 @@ function renderCampusCards(campuses) {
                         `).join('')}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     `).join('');
@@ -428,7 +570,12 @@ function toggleAll() {
 }
 
 function updateExpandAllBtn() {
-    document.getElementById('expandAllIcon').textContent = allExpanded ? '⊟' : '⊞';
+    const icon = document.getElementById('expandAllIcon');
+    if (allExpanded) {
+        icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>';
+    } else {
+        icon.innerHTML = '<polyline points="9 18 15 12 9 6"/>';
+    }
     document.getElementById('expandAllText').textContent = allExpanded ? '全部收起' : '全部展开';
 }
 
@@ -442,17 +589,6 @@ function renderBadge(val) {
 function esc(s) {
     if (!s && s !== 0) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function fmtBrief(n) {
-	if (!n && n !== 0) return '--';
-	if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
-	return n.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
-}
-
-function fmtPct(total, part) {
-	if (!total) return '--';
-	return (part / total * 100).toFixed(1) + '%';
 }
 
 function doSearch() { loadData(); }
