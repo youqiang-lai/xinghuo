@@ -401,85 +401,92 @@
 let allData = { campuses: [], summary: {} };
 let allExpanded = false;
 
-// ========== 列展示控制（必须在 init 前定义） ==========
-(function() {
-    const KEY_COL = 'list2_detail_col_visible';
-    const KEY_STAT = 'list2_stat_visible';
+// ========== 列展示控制（函数声明，hoisted，任何时机都可调用） ==========
+const KEY_COL = 'list2_detail_col_visible';
+const KEY_STAT = 'list2_stat_visible';
 
-    const STAT_DEFS = [
-        { key: 'total', label: '对接资源总量' },
-        { key: 'visit', label: '上门量' },
-        { key: 'sign', label: '签单量' },
-        { key: 'amount', label: '总金额' },
-        { key: 'signRate', label: '签单转化率' }
-    ];
+const STAT_DEFS = [
+    { key: 'total', label: '对接资源总量', cls: 'blue' },
+    { key: 'visit', label: '上门量', cls: 'green' },
+    { key: 'sign', label: '签单量', cls: 'orange' },
+    { key: 'amount', label: '总金额', cls: 'teal' },
+    { key: 'signRate', label: '签单转化率', cls: 'purple' }
+];
 
-    const COL_DEFS = [
-        { key: 'index', label: '序号' },
-        { key: 'month', label: '月份' },
-        { key: 'grade', label: '年级' },
-        { key: 'consultation99', label: '99元咨询课' },
-        { key: 'visit', label: '是否已上门' },
-        { key: 'sign', label: '是否签单' },
-        { key: 'followUp', label: '校区跟进结果' },
-        { key: 'amount', label: '金额(元)' }
-    ];
+const COL_DEFS = [
+    { key: 'index', label: '序号' },
+    { key: 'month', label: '月份' },
+    { key: 'grade', label: '年级' },
+    { key: 'consultation99', label: '99元咨询课' },
+    { key: 'visit', label: '是否已上门' },
+    { key: 'sign', label: '是否签单' },
+    { key: 'followUp', label: '校区跟进结果' },
+    { key: 'amount', label: '金额(元)' }
+];
 
-    function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) {} return null; }
-    function save(key, map) { localStorage.setItem(key, JSON.stringify(map)); }
-    function defaults(defs) { const m = {}; defs.forEach(c => m[c.key] = true); return m; }
+function lsGet(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
+function lsSet(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+function defsAll(defs) { var m = {}; defs.forEach(function(c) { m[c.key] = true; }); return m; }
 
-    window.initList2ColToggle = function() {
-        const statVisible = load(KEY_STAT) || defaults(STAT_DEFS);
-        const colVisible = load(KEY_COL) || defaults(COL_DEFS);
+function initList2ColToggle() {
+    var statVisible = lsGet(KEY_STAT) || defsAll(STAT_DEFS);
+    var colVisible = lsGet(KEY_COL) || defsAll(COL_DEFS);
 
-        document.getElementById('list2StatCheckboxes').innerHTML = STAT_DEFS.map(c =>
-            '<label><input type="checkbox" data-stat="' + c.key + '" ' + (statVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
-        ).join('');
-        document.getElementById('list2ColCheckboxes').innerHTML = COL_DEFS.map(c =>
-            '<label><input type="checkbox" data-col="' + c.key + '" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>'
-        ).join('');
-        applyList2ColVisible();
-    };
+    document.getElementById('list2StatCheckboxes').innerHTML = STAT_DEFS.map(function(c) {
+        return '<label><input type="checkbox" data-stat="' + c.key + '" ' + (statVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>';
+    }).join('');
+    document.getElementById('list2ColCheckboxes').innerHTML = COL_DEFS.map(function(c) {
+        return '<label><input type="checkbox" data-col="' + c.key + '" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="applyList2ColVisible()">' + c.label + '</label>';
+    }).join('');
+    applyList2ColVisible();
+}
 
-    window.applyList2ColVisible = function() {
-        // 统计项可见性
-        const statMap = {};
-        document.querySelectorAll('#list2StatCheckboxes input[type=checkbox]').forEach(cb => { statMap[cb.dataset.stat] = cb.checked; });
-        save(KEY_STAT, statMap);
-        document.querySelectorAll('.campus-stat-item').forEach(item => {
-            const val = item.querySelector('.value');
-            if (!val) return;
-            let key = '';
-            if (val.classList.contains('blue')) key = 'total';
-            else if (val.classList.contains('green')) key = 'visit';
-            else if (val.classList.contains('orange')) key = 'sign';
-            else if (val.classList.contains('teal')) key = 'amount';
-            else if (val.classList.contains('purple')) key = 'signRate';
-            item.style.display = statMap[key] ? '' : 'none';
-        });
+function applyList2ColVisible() {
+    // 统计项可见性
+    var statMap = {};
+    var statCbs = document.querySelectorAll('#list2StatCheckboxes input[type=checkbox]');
+    for (var i = 0; i < statCbs.length; i++) { statMap[statCbs[i].dataset.stat] = statCbs[i].checked; }
+    lsSet(KEY_STAT, statMap);
 
-        // 明细列可见性
-        const colMap = {};
-        document.querySelectorAll('#list2ColCheckboxes input[type=checkbox]').forEach(cb => { colMap[cb.dataset.col] = cb.checked; });
-        save(KEY_COL, colMap);
-        document.querySelectorAll('.detail-table thead th[data-col]').forEach(th => { th.style.display = colMap[th.dataset.col] ? '' : 'none'; });
-        document.querySelectorAll('.detail-table tbody td[data-col]').forEach(td => { td.style.display = colMap[td.dataset.col] ? '' : 'none'; });
-    };
+    var statItems = document.querySelectorAll('.campus-stat-item');
+    for (var i = 0; i < statItems.length; i++) {
+        var item = statItems[i];
+        var val = item.querySelector('.value');
+        if (!val) continue;
+        var key = '';
+        if (val.classList.contains('blue')) key = 'total';
+        else if (val.classList.contains('green')) key = 'visit';
+        else if (val.classList.contains('orange')) key = 'sign';
+        else if (val.classList.contains('teal')) key = 'amount';
+        else if (val.classList.contains('purple')) key = 'signRate';
+        item.style.display = statMap[key] ? '' : 'none';
+    }
 
-    window.toggleColPanel = function() {
-        document.getElementById('list2ColPanel').classList.toggle('show');
-    };
+    // 明细列可见性
+    var colMap = {};
+    var colCbs = document.querySelectorAll('#list2ColCheckboxes input[type=checkbox]');
+    for (var i = 0; i < colCbs.length; i++) { colMap[colCbs[i].dataset.col] = colCbs[i].checked; }
+    lsSet(KEY_COL, colMap);
 
-    // 点击面板外部关闭
-    document.addEventListener('click', function(e) {
-        const panel = document.getElementById('list2ColPanel');
-        const btn = document.querySelector('.col-toggle-btn');
-        if (panel && btn && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-            panel.classList.remove('show');
-        }
-    });
-})();
+    var ths = document.querySelectorAll('.detail-table thead th[data-col]');
+    for (var i = 0; i < ths.length; i++) { ths[i].style.display = colMap[ths[i].dataset.col] ? '' : 'none'; }
+    var tds = document.querySelectorAll('.detail-table tbody td[data-col]');
+    for (var i = 0; i < tds.length; i++) { tds[i].style.display = colMap[tds[i].dataset.col] ? '' : 'none'; }
+}
+
+function toggleColPanel() {
+    var panel = document.getElementById('list2ColPanel');
+    panel.classList.toggle('show');
+}
+
+// 点击面板外部关闭
+document.addEventListener('click', function(e) {
+    var panel = document.getElementById('list2ColPanel');
+    var btn = document.querySelector('.col-toggle-btn');
+    if (panel && btn && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        panel.classList.remove('show');
+    }
+});
 
 function init() {
     initList2ColToggle();
