@@ -340,7 +340,7 @@
                 </svg>
             </div>
             <div class="stat-info">
-                <div class="stat-label">上门转化率</div>
+                <div class="stat-label">上门率</div>
                 <div class="stat-value" id="cardVisit">--</div>
                 <div class="stat-sub" id="cardVisitSub"></div>
             </div>
@@ -369,8 +369,11 @@
             筛选
         </div>
         <select id="filterCampus" onchange="doSearch()"><option value="">全部校区</option></select>
-        <select id="filterMonth" onchange="doSearch()"><option value="">全部月份</option></select>
         <select id="filterGrade" onchange="doSearch()"><option value="">全部年级</option></select>
+        <span class="filter-title" style="font-size:13px;color:var(--text-secondary);">月份</span>
+        <select id="filterMonthFrom" onchange="doSearch()"><option value="">起始月份</option></select>
+        <span style="color:var(--text-muted);">~</span>
+        <select id="filterMonthTo" onchange="doSearch()"><option value="">结束月份</option></select>
         <input type="text" id="filterKeyword" placeholder="输入关键词自动筛选..." oninput="debouncedSearch()" />
         <button class="btn btn-outline" onclick="doReset()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -410,6 +413,7 @@ const STAT_DEFS = [
     { key: 'visit', label: '上门量', cls: 'green' },
     { key: 'sign', label: '签单量', cls: 'orange' },
     { key: 'amount', label: '总金额', cls: 'teal' },
+    { key: 'visitRate', label: '上门率', cls: 'green' },
     { key: 'signRate', label: '签单转化率', cls: 'purple' }
 ];
 
@@ -451,15 +455,15 @@ function applyList2ColVisible() {
     var statItems = document.querySelectorAll('.campus-stat-item');
     for (var i = 0; i < statItems.length; i++) {
         var item = statItems[i];
-        var val = item.querySelector('.value');
-        if (!val) continue;
-        var key = '';
-        if (val.classList.contains('blue')) key = 'total';
-        else if (val.classList.contains('green')) key = 'visit';
-        else if (val.classList.contains('orange')) key = 'sign';
-        else if (val.classList.contains('teal')) key = 'amount';
-        else if (val.classList.contains('purple')) key = 'signRate';
-        item.style.display = statMap[key] ? '' : 'none';
+        var key = item.dataset.stat || '';
+        if (!key) {
+            var val = item.querySelector('.value');
+            if (!val) continue;
+            if (val.classList.contains('blue')) key = 'total';
+            else if (val.classList.contains('orange')) key = 'sign';
+            else if (val.classList.contains('teal')) key = 'amount';
+        }
+        item.style.display = statMap[key] === false ? 'none' : '';
     }
 
     // 明细列可见性
@@ -502,7 +506,8 @@ function loadFilters() {
             if (res.code === 0 && res.data.filters) {
                 const f = res.data.filters;
                 populateSelect('filterCampus', f.campuses || [], '全部校区');
-                populateSelect('filterMonth', f.months || [], '全部月份');
+                populateSelect('filterMonthFrom', f.months || [], '起始月份');
+                populateSelect('filterMonthTo', f.months || [], '结束月份');
                 populateSelect('filterGrade', f.grades || [], '全部年级');
             }
         });
@@ -523,11 +528,13 @@ function populateSelect(id, items, defaultLabel) {
 function loadData() {
     const params = new URLSearchParams();
     const c = document.getElementById('filterCampus').value;
-    const m = document.getElementById('filterMonth').value;
+    const mf = document.getElementById('filterMonthFrom').value;
+    const mt = document.getElementById('filterMonthTo').value;
     const g = document.getElementById('filterGrade').value;
     const kw = document.getElementById('filterKeyword').value.trim();
     if (c) params.set('campus', c);
-    if (m) params.set('month', m);
+    if (mf) params.set('monthFrom', mf);
+    if (mt) params.set('monthTo', mt);
     if (g) params.set('grade', g);
     if (kw) params.set('keyword', kw);
 
@@ -575,7 +582,7 @@ function runAnimations() {
     countUp(document.getElementById('cardSign'), 0, s.overall_sign_rate || 0, dur,
         v => v.toFixed(1) + '%');
 
-    document.getElementById('cardVisitSub').textContent = '上门 ' + ((s.total_visit || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' 人';
+    document.getElementById('cardVisitSub').textContent = '上门 ' + ((s.total_visit || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' / 共 ' + ((s.total_records || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' 人';
     document.getElementById('cardSignSub').textContent = '签单 ' + ((s.total_sign || 0)).toLocaleString('zh-CN', {maximumFractionDigits:0}) + ' 人';
 
     // 校区卡片内数字动画 - 通过 data-target 属性驱动
@@ -640,25 +647,29 @@ function renderCampusCards(campuses) {
                     <span class="campus-tag">${esc(cs.campus)}</span>
                 </div>
                 <div class="campus-stats">
-                    <div class="campus-stat-item">
+                    <div class="campus-stat-item" data-stat="total">
                         <div class="label">对接资源总量</div>
                         <div class="value blue count-up" data-target="${cs.total_count}" data-decimals="0">0</div>
                     </div>
-                    <div class="campus-stat-item">
+                    <div class="campus-stat-item" data-stat="visit">
                         <div class="label">上门量</div>
                         <div class="value green count-up" data-target="${cs.visit_count}" data-decimals="0">0</div>
                     </div>
-                    <div class="campus-stat-item">
+                    <div class="campus-stat-item" data-stat="sign">
                         <div class="label">签单量</div>
                         <div class="value orange count-up" data-target="${cs.sign_count}" data-decimals="0">0</div>
                     </div>
-                    <div class="campus-stat-item">
+                    <div class="campus-stat-item" data-stat="amount">
                         <div class="label">总金额</div>
                         <div class="value teal count-up" data-target="${cs.total_amount}" data-decimals="0" data-prefix="¥ ">¥ 0</div>
                     </div>
-                    <div class="campus-stat-item">
+                    <div class="campus-stat-item" data-stat="visitRate">
+                        <div class="label">上门率</div>
+                        <div class="value green count-up-pct" data-target="${cs.visit_rate || 0}">0.0%</div>
+                    </div>
+                    <div class="campus-stat-item" data-stat="signRate">
                         <div class="label">签单转化率</div>
-                        <div class="value purple count-up-pct" data-target="${cs.total_count ? (cs.amount_count / cs.total_count * 100) : 0}">0.0%</div>
+                        <div class="value purple count-up-pct" data-target="${cs.sign_rate || 0}">0.0%</div>
                     </div>
                 </div>
             </div>
@@ -743,7 +754,8 @@ function debouncedSearch() {
 }
 function doReset() {
     document.getElementById('filterCampus').value = '';
-    document.getElementById('filterMonth').value = '';
+    document.getElementById('filterMonthFrom').value = '';
+    document.getElementById('filterMonthTo').value = '';
     document.getElementById('filterGrade').value = '';
     document.getElementById('filterKeyword').value = '';
     allExpanded = false;

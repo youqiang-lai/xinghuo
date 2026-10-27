@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -114,7 +116,7 @@ var fieldKeywords = map[string][]string{
 	"followUp":       {"校区跟进结果"},
 }
 
-// matchField 判断表头的 h 是否匹配字段 field
+// matcfield
 // campus/followUp/visit/sign 全字匹配(h==kw)，避免 "校区跟进结果"→"校区"、"预约到上门日期"→"是否已上门" 的误匹配
 func matchField(field string, h string, kw string) bool {
 	switch field {
@@ -223,7 +225,7 @@ func parseRows(rows [][]string) []model.ExcelRow {
 }
 
 // CalculateStats 多维度统计
-// 上门转化率 = 已上门且金额>0 / 已上门 × 100%
+// 上门率 = 已上门 / 总数 × 100%
 // 签单转化率 = 金额>0 / 总数 × 100%
 func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 	campusMap := make(map[string]*model.CampusStat)
@@ -232,7 +234,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 
 	totalRecords := 0
 	totalVisit := 0
-	totalVisitAmount := 0
 	totalAmountCount := 0
 	totalSign := 0
 	totalAmount := 0.0
@@ -246,9 +247,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 
 		if isVisit {
 			totalVisit++
-			if hasAmount {
-				totalVisitAmount++
-			}
 		}
 		if hasAmount {
 			totalAmountCount++
@@ -266,9 +264,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			cs.TotalAmount += row.Amount
 			if isVisit {
 				cs.VisitCount++
-				if hasAmount {
-					cs.VisitAmountCount++
-				}
 			}
 			if hasAmount {
 				cs.AmountCount++
@@ -287,9 +282,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			ms.TotalAmount += row.Amount
 			if isVisit {
 				ms.VisitCount++
-				if hasAmount {
-					ms.VisitAmountCount++
-				}
 			}
 			if hasAmount {
 				ms.AmountCount++
@@ -308,9 +300,6 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 			gs.TotalAmount += row.Amount
 			if isVisit {
 				gs.VisitCount++
-				if hasAmount {
-					gs.VisitAmountCount++
-				}
 			}
 			if hasAmount {
 				gs.AmountCount++
@@ -321,12 +310,12 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 		}
 	}
 
-	// 上门转化率 = 已上门且金额>0 / 已上门
+	// 上门率 = 已上门 / 总数
 	// 签单转化率 = 金额>0 / 总数
-	calcRates := func(visit, visitAmount, amountCount, total int) (float64, float64) {
+	calcRates := func(visit, amountCount, total int) (float64, float64) {
 		vr := 0.0
-		if visit > 0 {
-			vr = float64(visitAmount) / float64(visit) * 100
+		if total > 0 {
+			vr = float64(visit) / float64(total) * 100
 		}
 		sr := 0.0
 		if total > 0 {
@@ -337,25 +326,25 @@ func CalculateStats(rows []model.ExcelRow) model.DashboardData {
 
 	var campusStats []model.CampusStat
 	for _, v := range campusMap {
-		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.AmountCount, v.TotalCount)
 		campusStats = append(campusStats, *v)
 	}
 
 	var monthStats []model.MonthStat
 	for _, v := range monthMap {
-		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.AmountCount, v.TotalCount)
 		monthStats = append(monthStats, *v)
 	}
 
 	var gradeStats []model.GradeStat
 	for _, v := range gradeMap {
-		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.VisitAmountCount, v.AmountCount, v.TotalCount)
+		v.VisitRate, v.SignRate = calcRates(v.VisitCount, v.AmountCount, v.TotalCount)
 		gradeStats = append(gradeStats, *v)
 	}
 
 	overallVisitRate := 0.0
-	if totalVisit > 0 {
-		overallVisitRate = float64(totalVisitAmount) / float64(totalVisit) * 100
+	if totalRecords > 0 {
+		overallVisitRate = float64(totalVisit) / float64(totalRecords) * 100
 	}
 	overallSignRate := 0.0
 	if totalRecords > 0 {
@@ -384,20 +373,89 @@ func isYes(s string) bool {
 	return s == "是" || s == "yes" || s == "y" || s == "1" || s == "✓" || s == "true"
 }
 
-func FilterRows(rows []model.ExcelRow, campus, month, grade, keyword string) []model.ExcelRow {
-	if campus == "" && month == "" && grade == "" && keyword == "" {
+var (
+	yearMonthRe = regexp.MustCompile(`(\d{4})\D*(\d{1,2})`)
+	monthOnlyRe = regexp.MustCompile(`\d{1,2}`)
+)
+
+// MonthKey 将各种月份写法归一化为可比较的整数（年*100+月）
+// 支持 "2024-01"、"2024/1"、"2024年1月"、"202401" 等；仅月份（如 "1月"）返回 1~12
+// 无法识别时返回 0，不参与月份区间比较
+func MonthKey(s string) int {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0
+	}
+	if m := yearMonthRe.FindStringSubmatch(s); m != nil {
+		y, _ := strconv.Atoi(m[1])
+		mo, _ := strconv.Atoi(m[2])
+		if mo < 1 || mo > 12 {
+			return 0
+		}
+		return y*100 + mo
+	}
+	if d := monthOnlyRe.FindString(s); d != "" {
+		if mo, err := strconv.Atoi(d); err == nil && mo >= 1 && mo <= 12 {
+			return mo
+		}
+	}
+	return 0
+}
+
+// RowFilter 明细/统计筛选条件
+type RowFilter struct {
+	Campus    string // 校区（精确匹配）
+	Month     string // 月份（精确匹配）
+	MonthFrom string // 起始月份（含，按 MonthKey 比较）
+	MonthTo   string // 结束月份（含，按 MonthKey 比较）
+	Grade     string // 年级（精确匹配）
+	Keyword   string // 关键词（模糊匹配校区/月份/年级/跟进结果）
+}
+
+func (f RowFilter) Empty() bool {
+	return f.Campus == "" && f.Month == "" && f.MonthFrom == "" && f.MonthTo == "" &&
+		f.Grade == "" && strings.TrimSpace(f.Keyword) == ""
+}
+
+// matchMonthRange 按月份区间过滤；无区间限制时直接放行
+func (f RowFilter) matchMonthRange(month string) bool {
+	if f.MonthFrom == "" && f.MonthTo == "" {
+		return true
+	}
+	mk := MonthKey(month)
+	if mk == 0 {
+		return false // 月份无法识别，无法判断是否落在区间内
+	}
+	if f.MonthFrom != "" {
+		if from := MonthKey(f.MonthFrom); from > 0 && mk < from {
+			return false
+		}
+	}
+	if f.MonthTo != "" {
+		if to := MonthKey(f.MonthTo); to > 0 && mk > to {
+			return false
+		}
+	}
+	return true
+}
+
+func FilterRows(rows []model.ExcelRow, f RowFilter) []model.ExcelRow {
+	if f.Empty() {
 		return rows
 	}
 	var result []model.ExcelRow
-	kw := strings.ToLower(strings.TrimSpace(keyword))
+	kw := strings.ToLower(strings.TrimSpace(f.Keyword))
 	for _, row := range rows {
-		if campus != "" && row.Campus != campus {
+		if f.Campus != "" && row.Campus != f.Campus {
 			continue
 		}
-		if month != "" && row.Month != month {
+		if f.Month != "" && row.Month != f.Month {
 			continue
 		}
-		if grade != "" && row.Grade != grade {
+		if !f.matchMonthRange(row.Month) {
+			continue
+		}
+		if f.Grade != "" && row.Grade != f.Grade {
 			continue
 		}
 		if kw != "" {
@@ -461,20 +519,23 @@ func ExtractFilterOptions(rows []model.ExcelRow) (campuses, months, grades []str
 	for k := range gradeSet {
 		grades = append(grades, k)
 	}
-	sortStrings(campuses)
-	sortStrings(months)
-	sortStrings(grades)
-	return
-}
-
-func sortStrings(arr []string) {
-	for i := 0; i < len(arr); i++ {
-		for j := i + 1; j < len(arr); j++ {
-			if arr[i] > arr[j] {
-				arr[i], arr[j] = arr[j], arr[i]
+	sort.Strings(campuses)
+	// 月份按时间顺序排序（"2024-9" 之类也能正确排在 "2024-10" 前）
+	sort.Slice(months, func(i, j int) bool {
+		ki, kj := MonthKey(months[i]), MonthKey(months[j])
+		if ki != kj {
+			if ki == 0 {
+				return false
 			}
+			if kj == 0 {
+				return true
+			}
+			return ki < kj
 		}
-	}
+		return months[i] < months[j]
+	})
+	sort.Strings(grades)
+	return
 }
 
 // CampusSummary 校区汇总
@@ -485,6 +546,8 @@ type CampusSummary struct {
 	SignCount   int              `json:"sign_count"`   // 签单量
 	AmountCount int              `json:"amount_count"` // 金额>0数
 	TotalAmount float64          `json:"total_amount"` // 总金额
+	VisitRate   float64          `json:"visit_rate"`   // 上门率: 上门量 / 总量
+	SignRate    float64          `json:"sign_rate"`    // 签单转化率: 金额>0数 / 总量
 	Rows        []model.ExcelRow `json:"rows"`         // 该校区明细行
 }
 
@@ -519,7 +582,12 @@ func GroupByCampus(rows []model.ExcelRow) []CampusSummary {
 
 	var result []CampusSummary
 	for _, c := range order {
-		result = append(result, *m[c])
+		cs := m[c]
+		if cs.TotalCount > 0 {
+			cs.VisitRate = float64(cs.VisitCount) / float64(cs.TotalCount) * 100
+			cs.SignRate = float64(cs.AmountCount) / float64(cs.TotalCount) * 100
+		}
+		result = append(result, *cs)
 	}
 	return result
 }

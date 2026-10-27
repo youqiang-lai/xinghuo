@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"xing-huo/internal/service"
 
@@ -37,7 +38,27 @@ func DataApiGroup(engine *gin.Engine, exeDir string) {
 	})
 }
 
-// dataHandler 返回统计数据JSON
+// parseRowFilter 从请求参数解析筛选条件
+// month 为精确月份；monthFrom/monthTo 为月份区间（含端点，可只传一端）
+func parseRowFilter(c *gin.Context) service.RowFilter {
+	return service.RowFilter{
+		Campus:    strings.TrimSpace(c.Query("campus")),
+		Month:     strings.TrimSpace(c.Query("month")),
+		MonthFrom: strings.TrimSpace(c.Query("monthFrom")),
+		MonthTo:   strings.TrimSpace(c.Query("monthTo")),
+		Grade:     strings.TrimSpace(c.Query("grade")),
+		Keyword:   strings.TrimSpace(c.Query("keyword")),
+	}
+}
+
+// filterForCharts 大屏图表按校区/月份/年级统计，只沿用对应维度，忽略关键词与单一月份
+func filterForCharts(f service.RowFilter) service.RowFilter {
+	f.Keyword = ""
+	f.Month = ""
+	return f
+}
+
+// dataHandler 返回统计数据JSON（支持筛选）
 func dataHandler(c *gin.Context, exeDir string) {
 	rows, fileCount, err := service.ReadExcelDir(exeDir)
 	if err != nil {
@@ -49,7 +70,8 @@ func dataHandler(c *gin.Context, exeDir string) {
 		return
 	}
 
-	stats := service.CalculateStats(rows)
+	filter := parseRowFilter(c)
+	stats := service.CalculateStats(service.FilterRows(rows, filter))
 	stats.Summary.FileCount = fileCount
 	stats.RawRows = nil
 
@@ -60,21 +82,29 @@ func dataHandler(c *gin.Context, exeDir string) {
 	})
 }
 
-// pageHandler 返回数据统计大屏页面
+// pageHandler 返回数据统计大屏页面（统计数据按月份范围等筛选条件重新计算）
 func pageHandler(c *gin.Context, exeDir string) {
 	rows, fileCount, err := service.ReadExcelDir(exeDir)
 	errorMsg := ""
-	stats := service.CalculateStats(rows)
-	stats.Summary.FileCount = fileCount
 	if err != nil && !os.IsNotExist(err) {
 		errorMsg = err.Error()
 	}
+
+	filter := parseRowFilter(c)
+	// 图表是校区/月份/年级维度，关键词筛选没有意义
+	stats := service.CalculateStats(service.FilterRows(rows, filterForCharts(filter)))
+	stats.Summary.FileCount = fileCount
+
+	_, months, _ := service.ExtractFilterOptions(rows)
 	absDir, _ := filepath.Abs(exeDir)
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{
-		"title":    "星火数据统计大屏",
-		"error":    errorMsg,
-		"stats":    stats,
-		"excelDir": filepath.Join(absDir, "excel"),
+		"title":      "星火数据统计大屏",
+		"error":      errorMsg,
+		"stats":      stats,
+		"excelDir":   filepath.Join(absDir, "excel"),
+		"months":     months,
+		"filterFrom": filter.MonthFrom,
+		"filterTo":   filter.MonthTo,
 	})
 }
 
@@ -90,17 +120,13 @@ func listApiHandler(c *gin.Context, exeDir string) {
 		return
 	}
 
-	stats := service.CalculateStats(rows)
+	// 筛选原始行数据（汇总卡片跟随筛选结果，与列表内容一致）
+	filter := parseRowFilter(c)
+	filteredRows := service.FilterRows(rows, filter)
+
+	stats := service.CalculateStats(filteredRows)
 	stats.Summary.FileCount = fileCount
 	stats.RawRows = nil // API不返回明细
-
-	// 筛选原始行数据
-	filteredRows := service.FilterRows(rows,
-		c.Query("campus"),
-		c.Query("month"),
-		c.Query("grade"),
-		c.Query("keyword"),
-	)
 
 	total := len(filteredRows)
 	page, pageSize, offset := service.ParsePagination(c.Query("page"), c.Query("pageSize"))
@@ -148,17 +174,13 @@ func list2ApiHandler(c *gin.Context, exeDir string) {
 		return
 	}
 
-	stats := service.CalculateStats(rows)
+	// 按筛选条件过滤后，按校区分组；汇总卡片跟随筛选结果
+	filter := parseRowFilter(c)
+	filteredRows := service.FilterRows(rows, filter)
+
+	stats := service.CalculateStats(filteredRows)
 	stats.Summary.FileCount = fileCount
 	stats.RawRows = nil
-
-	// 按筛选条件过滤后，按校区分组
-	filteredRows := service.FilterRows(rows,
-		c.Query("campus"),
-		c.Query("month"),
-		c.Query("grade"),
-		c.Query("keyword"),
-	)
 
 	campusSummaries := service.GroupByCampus(filteredRows)
 	campuses, months, grades := service.ExtractFilterOptions(rows)

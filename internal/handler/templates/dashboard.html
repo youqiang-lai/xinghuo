@@ -125,6 +125,51 @@
             color: rgba(0, 200, 255, 0.8); letter-spacing: 1px;
         }
 
+        /* ============ 筛选栏 ============ */
+        .filter-bar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 16px 24px; margin-bottom: 20px;
+            box-shadow: var(--glow); display: flex; align-items: center; gap: 16px;
+            flex-wrap: wrap; position: relative;
+        }
+        .filter-bar::before {
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .filter-bar .filter-label {
+            font-size: 14px; color: var(--accent); letter-spacing: 2px; font-weight: 600;
+        }
+        .filter-bar select {
+            height: 38px; padding: 0 14px; background: rgba(0, 20, 50, 0.8);
+            border: 1px solid var(--border-color); border-radius: 4px;
+            color: var(--text-bright); font-size: 13px; font-family: inherit;
+            min-width: 150px; outline: none; transition: all 0.3s;
+        }
+        .filter-bar select:hover { border-color: rgba(0, 200, 255, 0.6); }
+        .filter-bar select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0, 200, 255, 0.2); }
+        .filter-bar select option { background: #0a1628; color: #e0f0ff; }
+        .filter-bar .range-sep { color: rgba(184, 197, 214, 0.6); font-size: 13px; }
+        .filter-bar .btn {
+            height: 38px; padding: 0 24px; border-radius: 4px; font-size: 13px;
+            font-family: inherit; letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .filter-bar .btn-primary {
+            background: linear-gradient(135deg, rgba(0, 150, 220, 0.7), rgba(0, 200, 255, 0.5));
+            border: 1px solid rgba(0, 200, 255, 0.5); color: #fff;
+        }
+        .filter-bar .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(0, 180, 240, 0.9), rgba(0, 220, 255, 0.7));
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.3);
+        }
+        .filter-bar .btn-reset {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(184, 197, 214, 0.3); color: var(--text);
+        }
+        .filter-bar .btn-reset:hover { border-color: rgba(184, 197, 214, 0.6); background: rgba(255, 255, 255, 0.1); }
+        .filter-bar .filter-tip { font-size: 12px; color: rgba(184, 197, 214, 0.5); letter-spacing: 1px; }
+
         /* ============ 图表区 ============ */
         .charts-grid {
             display: grid; grid-template-columns: 1fr 1fr;
@@ -329,6 +374,25 @@
         数据更新时间：<span id="updateTime">{{.stats.Summary.TotalRecords}}</span>
     </div>
 
+    <!-- 月份范围筛选 -->
+    <form class="filter-bar" method="get" action="/data/index" id="monthFilterForm">
+        <span class="filter-label">🗓 月份范围</span>
+        <select name="monthFrom" id="monthFrom">
+            <option value="">起始月份</option>
+            {{$from := .filterFrom}}
+            {{range .months}}<option value="{{.}}" {{if eq . $from}}selected{{end}}>{{.}}</option>{{end}}
+        </select>
+        <span class="range-sep">~</span>
+        <select name="monthTo" id="monthTo">
+            <option value="">结束月份</option>
+            {{$to := .filterTo}}
+            {{range .months}}<option value="{{.}}" {{if eq . $to}}selected{{end}}>{{.}}</option>{{end}}
+        </select>
+        <button type="submit" class="btn btn-primary">🔍 查询</button>
+        <button type="button" class="btn btn-reset" onclick="resetMonthFilter()">↻ 重置</button>
+        <span class="filter-tip">统计口径：上门率 = 已上门(P列=是) / 总数</span>
+    </form>
+
     <!-- 汇总卡片 -->
     <div class="summary-row">
         <div class="stat-card">
@@ -345,9 +409,9 @@
         </div>
         <div class="stat-card rate">
             <div class="card-icon">🚪</div>
-            <div class="card-label">上门转化率</div>
+            <div class="card-label">上门率</div>
             <div class="card-value" id="visitRate">{{printf "%.1f" .stats.Summary.OverallVisitRate}}<span style="font-size:20px;">%</span></div>
-            <div class="card-sub" id="visitCount">上门 {{.stats.Summary.TotalVisit}} 人</div>
+            <div class="card-sub" id="visitCount">上门 {{.stats.Summary.TotalVisit}} / 共 {{.stats.Summary.TotalRecords}} 人</div>
         </div>
         <div class="stat-card rate">
             <div class="card-icon">✍️</div>
@@ -633,11 +697,19 @@ const chartDefaults = {
 })();
 {{end}}
 
+// ============ 月份范围筛选 ============
+function resetMonthFilter() {
+    document.getElementById('monthFrom').value = '';
+    document.getElementById('monthTo').value = '';
+    document.getElementById('monthFilterForm').submit();
+}
+
 // ============ 数据刷新 ============
 function refreshData() {
     const btn = document.querySelector('.refresh-btn');
     btn.classList.add('loading');
-    fetch('/data/index/api')
+    const qs = new URLSearchParams(window.location.search);
+    fetch('/data/index/api' + (qs.toString() ? '?' + qs.toString() : ''))
         .then(r => r.json())
         .then(res => { if (res.code === 0) location.reload(); else alert('刷新失败：' + res.message); })
         .catch(e => alert('网络请求失败: ' + e.message))

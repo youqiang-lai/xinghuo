@@ -264,15 +264,18 @@
     <div class="summary-row">
         <div class="stat-card"><div class="card-label">总咨询记录</div><div class="card-value" id="cardTotalRecords">--</div><div class="card-sub">TOTAL RECORDS</div></div>
         <div class="stat-card amount"><div class="card-label">总金额</div><div class="card-value" id="cardTotalAmount">--</div><div class="card-sub">TOTAL AMOUNT</div></div>
-        <div class="stat-card rate"><div class="card-label">上门转化率</div><div class="card-value" id="cardVisitRate">--<span style="font-size:18px;">%</span></div><div class="card-sub" id="cardVisitCount"></div></div>
+        <div class="stat-card rate"><div class="card-label">上门率</div><div class="card-value" id="cardVisitRate">--<span style="font-size:18px;">%</span></div><div class="card-sub" id="cardVisitCount"></div></div>
         <div class="stat-card rate"><div class="card-label">签单转化率</div><div class="card-value" id="cardSignRate">--<span style="font-size:18px;">%</span></div><div class="card-sub" id="cardSignCount"></div></div>
     </div>
 
     <div class="filter-bar">
         <div class="filter-label">🔍 筛选</div>
         <select id="filterCampus"><option value="">全部校区</option></select>
-        <select id="filterMonth"><option value="">全部月份</option></select>
         <select id="filterGrade"><option value="">全部年级</option></select>
+        <span class="filter-label" style="font-size:13px;letter-spacing:1px;color:rgba(184,197,214,0.7);">月份</span>
+        <select id="filterMonthFrom"><option value="">起始月份</option></select>
+        <span style="color:rgba(184,197,214,0.6);">~</span>
+        <select id="filterMonthTo"><option value="">结束月份</option></select>
         <input type="text" id="filterKeyword" placeholder="🔎 关键词搜索..." />
         <button class="btn btn-primary" onclick="doSearch()">🔍 查询</button>
         <button class="btn btn-reset" onclick="doReset()">↻ 重置</button>
@@ -406,7 +409,7 @@ document.addEventListener('click', function(e) {
     }
 })();
 
-const state = { campuses: [], months: [], grades: [], total: 0, page: 1, pageSize: 20, filterCampus: '', filterMonth: '', filterGrade: '', filterKeyword: '' };
+const state = { campuses: [], months: [], grades: [], total: 0, page: 1, pageSize: 20, filterCampus: '', filterMonthFrom: '', filterMonthTo: '', filterGrade: '', filterKeyword: '' };
 
 function init() { loadFilters(); loadData(); }
 init();
@@ -416,13 +419,16 @@ function loadFilters() {
         .then(r => r.json()).then(res => {
             if (res.code === 0 && res.data.filters) {
                 state.campuses = res.data.filters.campuses || []; state.months = res.data.filters.months || []; state.grades = res.data.filters.grades || [];
-                populateSelect('filterCampus', state.campuses); populateSelect('filterMonth', state.months); populateSelect('filterGrade', state.grades);
+                populateSelect('filterCampus', state.campuses, '全部校区');
+                populateSelect('filterMonthFrom', state.months, '起始月份');
+                populateSelect('filterMonthTo', state.months, '结束月份');
+                populateSelect('filterGrade', state.grades, '全部年级');
             }
         });
 }
-function populateSelect(id, items) {
+function populateSelect(id, items, defaultLabel) {
     const sel = document.getElementById(id); const val = sel.value;
-    sel.innerHTML = '<option value="">' + ({filterCampus:'全部校区',filterMonth:'全部月份',filterGrade:'全部年级'})[id] + '</option>';
+    sel.innerHTML = '<option value="">' + defaultLabel + '</option>';
     items.forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; sel.appendChild(opt); });
     sel.value = val;
 }
@@ -430,7 +436,8 @@ function loadData() {
     showLoading(true);
     const params = new URLSearchParams({ page: state.page, pageSize: state.pageSize });
     if (state.filterCampus) params.set('campus', state.filterCampus);
-    if (state.filterMonth) params.set('month', state.filterMonth);
+    if (state.filterMonthFrom) params.set('monthFrom', state.filterMonthFrom);
+    if (state.filterMonthTo) params.set('monthTo', state.filterMonthTo);
     if (state.filterGrade) params.set('grade', state.filterGrade);
     if (state.filterKeyword) params.set('keyword', state.filterKeyword);
     fetch('/data/list/api?' + params.toString())
@@ -444,7 +451,7 @@ function renderSummary(s) {
     document.getElementById('cardTotalRecords').textContent = s.total_records || 0;
     document.getElementById('cardTotalAmount').textContent = (s.total_amount || 0).toFixed(2);
     document.getElementById('cardVisitRate').innerHTML = (s.overall_visit_rate || 0).toFixed(1) + '<span style="font-size:18px;">%</span>';
-    document.getElementById('cardVisitCount').textContent = '上门 ' + (s.total_visit || 0) + ' 人';
+    document.getElementById('cardVisitCount').textContent = '上门 ' + (s.total_visit || 0) + ' / 共 ' + (s.total_records || 0) + ' 人';
     document.getElementById('cardSignRate').innerHTML = (s.overall_sign_rate || 0).toFixed(1) + '<span style="font-size:18px;">%</span>';
     document.getElementById('cardSignCount').textContent = '签单 ' + (s.total_sign || 0) + ' 人';
 }
@@ -493,8 +500,8 @@ function renderPagination() {
 function goPage(p) { const tp = Math.ceil(state.total/state.pageSize)||1; if(p<1||p>tp)return; state.page=p; loadData(); document.querySelector('.table-wrapper').scrollTop = 0; }
 function jumpPage() { const p = parseInt(document.getElementById('jumpInput').value); if(isNaN(p))return; goPage(p); }
 function changePageSize() { state.pageSize = parseInt(document.getElementById('pageSizeSelect').value); state.page = 1; loadData(); }
-function doSearch() { state.filterCampus = document.getElementById('filterCampus').value; state.filterMonth = document.getElementById('filterMonth').value; state.filterGrade = document.getElementById('filterGrade').value; state.filterKeyword = document.getElementById('filterKeyword').value.trim(); state.page = 1; loadData(); }
-function doReset() { document.getElementById('filterCampus').value=''; document.getElementById('filterMonth').value=''; document.getElementById('filterGrade').value=''; document.getElementById('filterKeyword').value=''; state.filterCampus=''; state.filterMonth=''; state.filterGrade=''; state.filterKeyword=''; state.page=1; loadData(); }
+function doSearch() { state.filterCampus = document.getElementById('filterCampus').value; state.filterMonthFrom = document.getElementById('filterMonthFrom').value; state.filterMonthTo = document.getElementById('filterMonthTo').value; state.filterGrade = document.getElementById('filterGrade').value; state.filterKeyword = document.getElementById('filterKeyword').value.trim(); state.page = 1; loadData(); }
+function doReset() { document.getElementById('filterCampus').value=''; document.getElementById('filterMonthFrom').value=''; document.getElementById('filterMonthTo').value=''; document.getElementById('filterGrade').value=''; document.getElementById('filterKeyword').value=''; state.filterCampus=''; state.filterMonthFrom=''; state.filterMonthTo=''; state.filterGrade=''; state.filterKeyword=''; state.page=1; loadData(); }
 function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
 
 // 初始化列展示
